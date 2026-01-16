@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Example Request-Response Pairs</title>
+    <style>
+        /* Container and general styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+        .note {
+            color: #546E7A;
+            font-weight: bold;
+            font-style: normal;
+        }
+        .cache-info-header {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            border: 1px solid #C8E6C9;
+        }
+        .cache-info-header .note {
+            color: #546E7A;
+            font-weight: bold;
+            font-style: normal;
+            display: block;
+            margin-top: 8px;
+        }
+
+        /* Entry styles */
+        .entry {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .cache-info {
+            padding: 8px 16px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            background-color: #E3F2FD;
+            color: #0D47A1;
+            font-size: 0.9em;
+        }
+        .cache-explanation {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
+        .request, .response, .curl-command {
+            padding: 8px 16px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        .request {
+            background-color: #B2DFDB;
+            color: #00695C;
+        }
+        .response {
+            background-color: #B39DDB;
+            color: #4527A0;
+        }
+        .curl-command {
+            background-color: #EEEEEE;
+            color: #212121;
+            white-space: pre-wrap;
+            display: none;
+        }
+        pre {
+            white-space: pre-wrap;
+            margin: 0;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 3px;
+            overflow-x: auto;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #4CAF50;
+            color: white;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+            <h1>Example Request-Response Pairs</h1>
+            <p class="subtitle">Final request (sent directly to the endpoint) and response pairs with curl commands for reproducibility. <span class="note">*Note: Responses may vary due to generation parameters, randomness, and other factors.</span></p>
+            <div class="cache-info-header">
+                <strong>About Cache Keys:</strong> Each request-response pair is identified by a unique cache key generated from the request payload hash. <span class="note">Note: Cache keys may differ across different models because the model field in the request payload will be different.</span>
+            </div>
+            
+                <div class="entry">
+                    <div class="cache-info">
+                        <strong>Cache Key:</strong> 5b99d36313e01318e03a81ad9e5a05b5645b67cf8c3ae2b55fd8afa25c0342e7
+                    </div>
+                    <div class="request">
+                        <strong>Request:</strong>
+                        <pre>{
+  &quot;model&quot;: &quot;meta/llama-3.1-70b-instruct&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Answer the following multiple choice question. The last line of your response should be of the following format: &#x27;Answer: $LETTER&#x27; (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nAstronomers are searching for exoplanets around two stars with exactly the same masses. Using the RV method, they detected one planet around each star, both with masses similar to that of Neptune. The stars themselves have masses similar to that of our Sun. Both planets were found to be in circular orbits.\n\nPlanet #1 was detected from the up to 5 miliangstrom periodic shift of a spectral line at a given wavelength. The periodic wavelength shift of the same spectral line in the spectrum of the host of planet #2 was 7 miliangstrom.\n\nThe question is: How many times is the orbital period of planet #2 longer than that of planet #1?\n\nA) ~ 0.36\nB) ~ 1.40\nC) ~ 1.96\nD) ~ 0.85&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0.6,
+  &quot;max_tokens&quot;: 2048,
+  &quot;top_p&quot;: 1e-05,
+  &quot;seed&quot;: 2451250664
+}</pre>
+                    </div>
+
+                    <div class="response">
+                        <strong>Response:</strong>
+                        <pre>null</pre>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="button" onclick="toggleRaw('curl-5b99d36313e01318e03a81ad9e5a05b5645b67cf8c3ae2b55fd8afa25c0342e7')">Show Curl Command</button>
+                    </div>
+
+                    <div id="curl-5b99d36313e01318e03a81ad9e5a05b5645b67cf8c3ae2b55fd8afa25c0342e7" class="curl-command">
+                        # Save payload to file first:
+                        echo '{"max_tokens": 2048, "messages": [{"content": "Answer the following multiple choice question. The last line of your response should be of the following format: \u0027Answer: $LETTER\u0027 (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nAstronomers are searching for exoplanets around two stars with exactly the same masses. Using the RV method, they detected one planet around each star, both with masses similar to that of Neptune. The stars themselves have masses similar to that of our Sun. Both planets were found to be in circular orbits.\n\nPlanet #1 was detected from the up to 5 miliangstrom periodic shift of a spectral line at a given wavelength. The periodic wavelength shift of the same spectral line in the spectrum of the host of planet #2 was 7 miliangstrom.\n\nThe question is: How many times is the orbital period of planet #2 longer than that of planet #1?\n\nA) ~ 0.36\nB) ~ 1.40\nC) ~ 1.96\nD) ~ 0.85", "role": "user"}], "model": "meta/llama-3.1-70b-instruct", "seed": 2451250664, "temperature": 0.6, "top_p": 1e-05}' > request.json
+
+                        curl "https://integrate.api.nvidia.com/v1/chat/completions"                         -H "Content-Type: application/json"                         -H "Authorization: Bearer $API_KEY"                         -H "Accept: application/json"                         -d @request.json
+                    </div>
+                </div>
+            
+                <div class="entry">
+                    <div class="cache-info">
+                        <strong>Cache Key:</strong> a572e4f79d5782478eef43deccad67914f48c175419c6fc6a3f6c8c63780d0c9
+                    </div>
+                    <div class="request">
+                        <strong>Request:</strong>
+                        <pre>{
+  &quot;model&quot;: &quot;meta/llama-3.1-70b-instruct&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Answer the following multiple choice question. The last line of your response should be of the following format: &#x27;Answer: $LETTER&#x27; (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nA eukaryotic cell evolved a mechanism to turn macromolecular building blocks into energy. The process occurs in mitochondria, which are cellular energy factories. In the series of redox reactions, the energy from food is stored between the phosphate groups and used as a universal cellular currency. The energy-laden molecules are shuttled out of the mitochondrion to serve in all cellular processes. You discovered a new anti-diabetes drug and want to investigate whether it has an effect on the mitochondria. You set up a range of experiments with your HEK293 cell line. Which of the experiments listed below will not help you discover the mitochondrial role of your drug:\n\nA) Differential centrifugation extraction of mitochondria followed by the Glucose Uptake Colorimetric Assay Kit \nB) Transformation of cells with recombinant luciferase and luminometer reading after 5 μM of luciferin addition to the supernatant\nC) Flow cytometry after labeling with 2.5 μM 5,5&#x27;,6,6&#x27;-Tetrachloro-1,1&#x27;,3, 3&#x27;-tetraethylbenzimidazolylcarbocyanine iodide\nD) Confocal fluorescence microscopy after Mito-RTP staining of the cells&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0.6,
+  &quot;max_tokens&quot;: 2048,
+  &quot;top_p&quot;: 1e-05,
+  &quot;seed&quot;: 3447386531
+}</pre>
+                    </div>
+
+                    <div class="response">
+                        <strong>Response:</strong>
+                        <pre>null</pre>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="button" onclick="toggleRaw('curl-a572e4f79d5782478eef43deccad67914f48c175419c6fc6a3f6c8c63780d0c9')">Show Curl Command</button>
+                    </div>
+
+                    <div id="curl-a572e4f79d5782478eef43deccad67914f48c175419c6fc6a3f6c8c63780d0c9" class="curl-command">
+                        # Save payload to file first:
+                        echo '{"max_tokens": 2048, "messages": [{"content": "Answer the following multiple choice question. The last line of your response should be of the following format: \u0027Answer: $LETTER\u0027 (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nA eukaryotic cell evolved a mechanism to turn macromolecular building blocks into energy. The process occurs in mitochondria, which are cellular energy factories. In the series of redox reactions, the energy from food is stored between the phosphate groups and used as a universal cellular currency. The energy-laden molecules are shuttled out of the mitochondrion to serve in all cellular processes. You discovered a new anti-diabetes drug and want to investigate whether it has an effect on the mitochondria. You set up a range of experiments with your HEK293 cell line. Which of the experiments listed below will not help you discover the mitochondrial role of your drug:\n\nA) Differential centrifugation extraction of mitochondria followed by the Glucose Uptake Colorimetric Assay Kit \nB) Transformation of cells with recombinant luciferase and luminometer reading after 5 \u03bcM of luciferin addition to the supernatant\nC) Flow cytometry after labeling with 2.5 \u03bcM 5,5\u0027,6,6\u0027-Tetrachloro-1,1\u0027,3, 3\u0027-tetraethylbenzimidazolylcarbocyanine iodide\nD) Confocal fluorescence microscopy after Mito-RTP staining of the cells", "role": "user"}], "model": "meta/llama-3.1-70b-instruct", "seed": 3447386531, "temperature": 0.6, "top_p": 1e-05}' > request.json
+
+                        curl "https://integrate.api.nvidia.com/v1/chat/completions"                         -H "Content-Type: application/json"                         -H "Authorization: Bearer $API_KEY"                         -H "Accept: application/json"                         -d @request.json
+                    </div>
+                </div>
+            
+                <div class="entry">
+                    <div class="cache-info">
+                        <strong>Cache Key:</strong> beaf6528022b3b6591083780e9192d79ca21e89bfed8544b730a01743c968216
+                    </div>
+                    <div class="request">
+                        <strong>Request:</strong>
+                        <pre>{
+  &quot;model&quot;: &quot;meta/llama-3.1-70b-instruct&quot;,
+  &quot;messages&quot;: [
+    {
+      &quot;role&quot;: &quot;user&quot;,
+      &quot;content&quot;: &quot;Answer the following multiple choice question. The last line of your response should be of the following format: &#x27;Answer: $LETTER&#x27; (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nChIP-seq on a PFA-fixed sample with an antibody to the IKAROS transcription factor in human B cells followed by next-generation sequencing and standard quality control, alignment and peak-calling steps produced ChIP peaks that disappeared when PFA+DSG fixation was used. Where are we most likely to find such disappearing peaks?\n\nA) At repeats\nB) In the introns of large genes\nC) At random locations in the genome\nD) At active promoters and enhancers&quot;
+    }
+  ],
+  &quot;temperature&quot;: 0.6,
+  &quot;max_tokens&quot;: 2048,
+  &quot;top_p&quot;: 1e-05,
+  &quot;seed&quot;: 1986526590
+}</pre>
+                    </div>
+
+                    <div class="response">
+                        <strong>Response:</strong>
+                        <pre>null</pre>
+                    </div>
+
+                    <div class="buttons">
+                        <button class="button" onclick="toggleRaw('curl-beaf6528022b3b6591083780e9192d79ca21e89bfed8544b730a01743c968216')">Show Curl Command</button>
+                    </div>
+
+                    <div id="curl-beaf6528022b3b6591083780e9192d79ca21e89bfed8544b730a01743c968216" class="curl-command">
+                        # Save payload to file first:
+                        echo '{"max_tokens": 2048, "messages": [{"content": "Answer the following multiple choice question. The last line of your response should be of the following format: \u0027Answer: $LETTER\u0027 (without quotes) where LETTER is one of ABCD. Think step by step before answering.\n\nChIP-seq on a PFA-fixed sample with an antibody to the IKAROS transcription factor in human B cells followed by next-generation sequencing and standard quality control, alignment and peak-calling steps produced ChIP peaks that disappeared when PFA+DSG fixation was used. Where are we most likely to find such disappearing peaks?\n\nA) At repeats\nB) In the introns of large genes\nC) At random locations in the genome\nD) At active promoters and enhancers", "role": "user"}], "model": "meta/llama-3.1-70b-instruct", "seed": 1986526590, "temperature": 0.6, "top_p": 1e-05}' > request.json
+
+                        curl "https://integrate.api.nvidia.com/v1/chat/completions"                         -H "Content-Type: application/json"                         -H "Authorization: Bearer $API_KEY"                         -H "Accept: application/json"                         -d @request.json
+                    </div>
+                </div>
+            
+        
+    </div>
+
+    <script>
+        function toggleRaw(elementId) {
+            const element = document.getElementById(elementId);
+            if (element.style.display === 'none' || element.style.display === '') {
+                element.style.display = 'block';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

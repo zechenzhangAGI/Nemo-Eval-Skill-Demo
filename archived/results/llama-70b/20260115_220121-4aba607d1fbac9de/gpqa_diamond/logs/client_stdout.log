@@ -1,0 +1,662 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T03:01:24.343] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T03:01:24.602] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: 5
+    parallelism: 3
+    request_timeout: 60
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-70b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T03:01:24.681] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T03:01:25.197] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T03:01:25.227] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T03:01:25.228] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:25.229] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T03:01:25.231] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T03:01:25.231] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:25.231] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:30.496] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T03:01:30.496] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T03:01:32.163] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T03:01:32.225] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T03:01:32.225] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:32.230] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:32.230] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:32.232] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:3825
+[I 2026-01-16T03:01:32.232] [33mPress CTRL+C to quit[0m
+[I 2026-01-16T03:01:32.308] Adapter server started on localhost:3825 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:01:32.321] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-70b-instruct --eval_name gpqa_diamond --url http://localhost:3825 --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 3 --max_retries 5 --timeout 60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:01:32.322] Temporary directory created at: /tmp/tmp3yj85si4 logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:01:32.322] Script file created: /tmp/tmp3yj85si4/0714ab0b0f571bba69113df96b07d28515d872df.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:01:32.322] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:01:32.322] Subprocess started. logger=nemo_evaluator.core.utils
+Using model: meta/llama-3.1-70b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 25.0MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 30.5MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7406.33 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s][I 2026-01-16T03:01:39.412] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=1140ca1a-8a73-4916-a9c2-aa45f39af5bf
+[I 2026-01-16T03:01:39.413] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=59c5ef63-edda-41a1-bf6f-ff4d8e3e4213
+[I 2026-01-16T03:01:39.413] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=12300d9f-1f21-4e9f-8a12-101521099c74
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T03:02:40.146] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e83e6e6a-fe35-489b-9e6d-5f040db0f1c0
+[I 2026-01-16T03:02:40.147] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f081b40e-52ec-41f2-9bb5-8593c2ddfa54
+[I 2026-01-16T03:02:40.147] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3a2fd125-713e-44ec-8efc-71eac8b71f23
+[W 2026-01-16T03:02:40.280] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3a2fd125-713e-44ec-8efc-71eac8b71f23
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T03:03:45.150] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=edb0e265-462a-4033-a69f-b971bdeb08ed
+[W 2026-01-16T03:03:45.150] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=edb0e265-462a-4033-a69f-b971bdeb08ed
+[I 2026-01-16T03:03:45.151] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bc94d372-f558-4d11-bab0-0d5b168984a3
+[W 2026-01-16T03:03:45.151] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=bc94d372-f558-4d11-bab0-0d5b168984a3
+[I 2026-01-16T03:03:45.151] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2ffe28a7-630c-4fca-9324-b6ac6ade0a60
+[W 2026-01-16T03:03:45.152] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2ffe28a7-630c-4fca-9324-b6ac6ade0a60
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+[I 2026-01-16T03:04:54.153] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=79d1d79f-1cc7-4bc3-ba6b-7c72d2ddf524
+[W 2026-01-16T03:04:54.154] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=79d1d79f-1cc7-4bc3-ba6b-7c72d2ddf524
+[I 2026-01-16T03:04:54.155] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c70da6d2-16aa-4a0f-9fc0-672fd39ddb79
+[W 2026-01-16T03:04:54.155] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c70da6d2-16aa-4a0f-9fc0-672fd39ddb79
+[I 2026-01-16T03:04:54.157] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=653a8a44-3880-4c5d-b166-311da57dd23b
+[W 2026-01-16T03:04:54.157] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=653a8a44-3880-4c5d-b166-311da57dd23b
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+[I 2026-01-16T03:06:11.163] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=514a8453-1480-43d1-8a8f-59533900cd28
+[W 2026-01-16T03:06:11.163] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=514a8453-1480-43d1-8a8f-59533900cd28
+[I 2026-01-16T03:06:11.178] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a0745493-127f-473a-9ff6-d5b5f4dcc383
+[W 2026-01-16T03:06:11.179] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a0745493-127f-473a-9ff6-d5b5f4dcc383
+[I 2026-01-16T03:06:11.179] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=58e6dcba-cabb-4e87-9747-20db3025a335
+[W 2026-01-16T03:06:11.180] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=58e6dcba-cabb-4e87-9747-20db3025a335
+[W 2026-01-16T03:06:41.649] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=1140ca1a-8a73-4916-a9c2-aa45f39af5bf
+[W 2026-01-16T03:06:41.704] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=59c5ef63-edda-41a1-bf6f-ff4d8e3e4213
+[W 2026-01-16T03:06:41.749] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=12300d9f-1f21-4e9f-8a12-101521099c74
+[I 2026-01-16T03:06:41.829] Request completed status_code=504 path= logger=root request_id=59c5ef63-edda-41a1-bf6f-ff4d8e3e4213
+[I 2026-01-16T03:06:41.830] 127.0.0.1 - - [16/Jan/2026 03:06:41] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T03:06:41.881] Request completed status_code=504 path= logger=root request_id=1140ca1a-8a73-4916-a9c2-aa45f39af5bf
+[I 2026-01-16T03:06:41.882] 127.0.0.1 - - [16/Jan/2026 03:06:41] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T03:06:41.963] Request completed status_code=504 path= logger=root request_id=12300d9f-1f21-4e9f-8a12-101521099c74
+[I 2026-01-16T03:06:41.964] 127.0.0.1 - - [16/Jan/2026 03:06:41] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+Retry attempt 5/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+  0% 0/198 [05:34<?, ?it/s]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b002cf0 state=finished raised TimeoutError>]
+Task exception was never retrieved
+future: <Task finished name='Task-4' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x14d64b003770 state=finished raised TimeoutError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b003770 state=finished raised TimeoutError>]
+Task exception was never retrieved
+future: <Task finished name='Task-2' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x14d64b003800 state=finished raised TimeoutError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b003800 state=finished raised TimeoutError>]
+[I 2026-01-16T03:07:12.469] Output reading completed. logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:07:12.470] Subprocess finished with return code: 1 logger=nemo_evaluator.core.utils
+[I 2026-01-16T03:07:15.526] Generated HTML report path=/results/report.html logger=root
+[I 2026-01-16T03:07:15.534] Generated JSON report path=/results/report.json logger=root
+[I 2026-01-16T03:07:15.534] Successfully ran post-eval hook: PostEvalReportHook logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.534] Writing response statistics to metrics total_responses=3 successful_responses=0 output_dir=/results logger=ResponseStatsInterceptor
+[I 2026-01-16T03:07:15.542] Successfully ran post-eval hook: ResponseStatsInterceptor logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.543] Post-eval hooks execution completed logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.543] 127.0.0.1 - - [16/Jan/2026 03:07:15] "POST /adapterserver/run-post-hook HTTP/1.1" 200 -
+[I 2026-01-16T03:07:15.544] Successfully ran post-evaluation hooks logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.545] Received signal 15, running post-eval hooks before shutdown logger=nemo_evaluator.adapters.server
+[W 2026-01-16T03:07:15.545] Post-eval hooks have already been executed, skipping logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.545] Post-eval hooks completed successfully logger=nemo_evaluator.adapters.server
+[I 2026-01-16T03:07:15.545] Adapter server shutting down logger=nemo_evaluator.adapters.server
+Traceback (most recent call last):
+  File "/opt/venv/bin/nemo-evaluator", line 7, in <module>
+    sys.exit(run_eval())
+             ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 208, in run_eval
+    run(args)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 170, in run
+    evaluate(eval_cfg=eval_cfg, target_cfg=target_cfg, metadata=metadata_cfg)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 137, in evaluate
+    evaluation_result, metrics = monitor_memory_usage(
+                                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/resources.py", line 279, in monitor_memory_usage
+    ret = func(*args, **func_kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 112, in run_evaluation_core
+    run_command(cmd, verbose=True, propagate_errors=True)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/utils.py", line 171, in run_command
+    raise RuntimeError(
+RuntimeError: Evaluation failed! Please consult the logs below:
+Using model: meta/llama-3.1-70b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 25.0MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 30.5MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7406.33 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s]Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+  0% 0/198 [05:34<?, ?it/s]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b002cf0 state=finished raised TimeoutError>]
+Task exception was never retrieved
+future: <Task finished name='Task-4' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x14d64b003770 state=finished raised TimeoutError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b003770 state=finished raised TimeoutError>]
+Task exception was never retrieved
+future: <Task finished name='Task-2' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x14d64b003800 state=finished raised TimeoutError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x14d64b003800 state=finished raised TimeoutError>]
+
+The evaluation container failed with exit code 1

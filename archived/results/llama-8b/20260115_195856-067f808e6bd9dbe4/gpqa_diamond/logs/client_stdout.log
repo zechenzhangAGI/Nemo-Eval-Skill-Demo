@@ -1,0 +1,1248 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T00:58:58.869] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T00:58:59.109] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: 5
+    parallelism: 4
+    request_timeout: 60
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-8b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T00:58:59.135] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T00:58:59.540] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T00:58:59.569] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T00:58:59.569] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T00:58:59.571] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T00:58:59.600] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T00:58:59.600] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T00:58:59.600] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T00:59:53.658] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T00:59:53.659] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T01:00:12.239] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T01:00:12.802] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T01:00:12.802] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:00:12.807] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:00:12.807] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:00:12.808] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:3825
+[I 2026-01-16T01:00:12.808] [33mPress CTRL+C to quit[0m
+[I 2026-01-16T01:00:12.943] Adapter server started on localhost:3825 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:00:12.956] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-8b-instruct --eval_name gpqa_diamond --url http://localhost:3825 --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 4 --max_retries 5 --timeout 60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:00:12.957] Temporary directory created at: /tmp/tmpv8taviqf logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:00:12.957] Script file created: /tmp/tmpv8taviqf/bcaa91f2d3ae7d641b2c5729ba715f6faf4704ba.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:00:12.957] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:00:12.958] Subprocess started. logger=nemo_evaluator.core.utils
+Using model: meta/llama-3.1-8b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 31.4MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 41.7MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7992.23 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s][I 2026-01-16T01:00:44.894] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bebc410a-fb95-4bbd-8607-3b742d91bceb
+[I 2026-01-16T01:00:44.895] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=86e32d18-393d-428b-8c0a-afc222d3a4bb
+[I 2026-01-16T01:00:44.896] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a3f3eea8-0020-48ee-a059-bf07d56d7019
+[I 2026-01-16T01:00:44.897] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f8e98d75-ed61-4b66-933c-d4e6ec280fc6
+[I 2026-01-16T01:00:49.162] Cached successful response cache_key=75196132... logger=CachingInterceptor request_id=bebc410a-fb95-4bbd-8607-3b742d91bceb
+[I 2026-01-16T01:00:49.162] Request completed status_code=200 path= logger=root request_id=bebc410a-fb95-4bbd-8607-3b742d91bceb
+[I 2026-01-16T01:00:49.163] 127.0.0.1 - - [16/Jan/2026 01:00:49] "POST / HTTP/1.1" 200 -
+  1% 1/198 [00:20<1:05:57, 20.09s/it][I 2026-01-16T01:00:49.614] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=04c5bbe0-fa67-4d63-a080-a578a1ed2e6f
+[I 2026-01-16T01:00:52.038] Cached successful response cache_key=8ad30fed... logger=CachingInterceptor request_id=a3f3eea8-0020-48ee-a059-bf07d56d7019
+[I 2026-01-16T01:00:52.038] Request completed status_code=200 path= logger=root request_id=a3f3eea8-0020-48ee-a059-bf07d56d7019
+[I 2026-01-16T01:00:52.039] 127.0.0.1 - - [16/Jan/2026 01:00:52] "POST / HTTP/1.1" 200 -
+  1% 2/198 [00:22<32:14,  9.87s/it]  [I 2026-01-16T01:00:52.333] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=297af3f9-8718-4c78-bb1a-7bacedab3df5
+[W 2026-01-16T01:00:52.333] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=297af3f9-8718-4c78-bb1a-7bacedab3df5
+[I 2026-01-16T01:00:52.696] Cached successful response cache_key=43d744e3... logger=CachingInterceptor request_id=86e32d18-393d-428b-8c0a-afc222d3a4bb
+[I 2026-01-16T01:00:52.696] Request completed status_code=200 path= logger=root request_id=86e32d18-393d-428b-8c0a-afc222d3a4bb
+[I 2026-01-16T01:00:52.697] 127.0.0.1 - - [16/Jan/2026 01:00:52] "POST / HTTP/1.1" 200 -
+  2% 3/198 [00:23<18:35,  5.72s/it][I 2026-01-16T01:00:53.110] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8fb2b625-d1f2-45ea-b630-4c72d8230f00
+[W 2026-01-16T01:00:53.110] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8fb2b625-d1f2-45ea-b630-4c72d8230f00
+[I 2026-01-16T01:00:53.492] Cached successful response cache_key=84dd230c... logger=CachingInterceptor request_id=f8e98d75-ed61-4b66-933c-d4e6ec280fc6
+[I 2026-01-16T01:00:53.499] Request completed status_code=200 path= logger=root request_id=f8e98d75-ed61-4b66-933c-d4e6ec280fc6
+[I 2026-01-16T01:00:53.500] 127.0.0.1 - - [16/Jan/2026 01:00:53] "POST / HTTP/1.1" 200 -
+  2% 4/198 [00:24<12:11,  3.77s/it][I 2026-01-16T01:00:53.896] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=cdd639fd-c74c-44c7-a0af-cb5fd3602f1f
+[W 2026-01-16T01:00:53.896] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=cdd639fd-c74c-44c7-a0af-cb5fd3602f1f
+[I 2026-01-16T01:00:56.661] Cached successful response cache_key=7e0fae69... logger=CachingInterceptor request_id=297af3f9-8718-4c78-bb1a-7bacedab3df5
+[I 2026-01-16T01:00:56.661] Request completed status_code=200 path= logger=root request_id=297af3f9-8718-4c78-bb1a-7bacedab3df5
+[I 2026-01-16T01:00:56.662] 127.0.0.1 - - [16/Jan/2026 01:00:56] "POST / HTTP/1.1" 200 -
+  3% 5/198 [00:27<11:18,  3.52s/it][I 2026-01-16T01:00:56.964] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=783c0d4d-c73f-4309-b50e-268bf73ea8ff
+[W 2026-01-16T01:00:56.965] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=783c0d4d-c73f-4309-b50e-268bf73ea8ff
+[I 2026-01-16T01:00:59.433] Cached successful response cache_key=59b152bb... logger=CachingInterceptor request_id=8fb2b625-d1f2-45ea-b630-4c72d8230f00
+[I 2026-01-16T01:00:59.433] Request completed status_code=200 path= logger=root request_id=8fb2b625-d1f2-45ea-b630-4c72d8230f00
+[I 2026-01-16T01:00:59.434] 127.0.0.1 - - [16/Jan/2026 01:00:59] "POST / HTTP/1.1" 200 -
+  3% 6/198 [00:30<10:34,  3.31s/it][I 2026-01-16T01:00:59.863] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=778ed6d0-09d0-4b47-b930-4bb94d66b5d7
+[W 2026-01-16T01:00:59.863] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=778ed6d0-09d0-4b47-b930-4bb94d66b5d7
+[I 2026-01-16T01:01:00.078] Cached successful response cache_key=7e3307c8... logger=CachingInterceptor request_id=04c5bbe0-fa67-4d63-a080-a578a1ed2e6f
+[I 2026-01-16T01:01:00.078] Request completed status_code=200 path= logger=root request_id=04c5bbe0-fa67-4d63-a080-a578a1ed2e6f
+[I 2026-01-16T01:01:00.079] 127.0.0.1 - - [16/Jan/2026 01:01:00] "POST / HTTP/1.1" 200 -
+  4% 7/198 [00:30<07:43,  2.43s/it][I 2026-01-16T01:01:00.480] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=898b3982-0000-4e3e-98ca-d0f851e64edc
+[W 2026-01-16T01:01:00.480] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=898b3982-0000-4e3e-98ca-d0f851e64edc
+[I 2026-01-16T01:01:03.726] Cached successful response cache_key=4d208d48... logger=CachingInterceptor request_id=898b3982-0000-4e3e-98ca-d0f851e64edc
+[I 2026-01-16T01:01:03.726] Request completed status_code=200 path= logger=root request_id=898b3982-0000-4e3e-98ca-d0f851e64edc
+[I 2026-01-16T01:01:03.727] 127.0.0.1 - - [16/Jan/2026 01:01:03] "POST / HTTP/1.1" 200 -
+  4% 8/198 [00:34<09:01,  2.85s/it][I 2026-01-16T01:01:04.230] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=738e508b-89f8-456b-9794-833af5dd79e4
+[W 2026-01-16T01:01:04.230] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=738e508b-89f8-456b-9794-833af5dd79e4
+[I 2026-01-16T01:01:07.708] Cached successful response cache_key=57e1b8ea... logger=CachingInterceptor request_id=cdd639fd-c74c-44c7-a0af-cb5fd3602f1f
+[I 2026-01-16T01:01:07.708] Request completed status_code=200 path= logger=root request_id=cdd639fd-c74c-44c7-a0af-cb5fd3602f1f
+[I 2026-01-16T01:01:07.709] 127.0.0.1 - - [16/Jan/2026 01:01:07] "POST / HTTP/1.1" 200 -
+  5% 9/198 [00:38<10:05,  3.20s/it][I 2026-01-16T01:01:08.228] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=91ae453b-9c69-43dc-964d-dbe4ba3966d0
+[W 2026-01-16T01:01:08.229] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=91ae453b-9c69-43dc-964d-dbe4ba3966d0
+[I 2026-01-16T01:01:10.224] Cached successful response cache_key=60790406... logger=CachingInterceptor request_id=738e508b-89f8-456b-9794-833af5dd79e4
+[I 2026-01-16T01:01:10.224] Request completed status_code=200 path= logger=root request_id=738e508b-89f8-456b-9794-833af5dd79e4
+[I 2026-01-16T01:01:10.225] 127.0.0.1 - - [16/Jan/2026 01:01:10] "POST / HTTP/1.1" 200 -
+  5% 10/198 [00:41<09:11,  2.94s/it][I 2026-01-16T01:01:10.547] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=698db45b-4147-45ed-a2e5-832325db1250
+[W 2026-01-16T01:01:10.548] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=698db45b-4147-45ed-a2e5-832325db1250
+[I 2026-01-16T01:01:11.606] Cached successful response cache_key=5f65ea67... logger=CachingInterceptor request_id=783c0d4d-c73f-4309-b50e-268bf73ea8ff
+[I 2026-01-16T01:01:11.606] Request completed status_code=200 path= logger=root request_id=783c0d4d-c73f-4309-b50e-268bf73ea8ff
+[I 2026-01-16T01:01:11.607] 127.0.0.1 - - [16/Jan/2026 01:01:11] "POST / HTTP/1.1" 200 -
+  6% 11/198 [00:42<07:51,  2.52s/it][I 2026-01-16T01:01:12.133] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c5cda65c-d704-4f37-bc0b-06aaa416a9ed
+[W 2026-01-16T01:01:12.134] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c5cda65c-d704-4f37-bc0b-06aaa416a9ed
+[I 2026-01-16T01:01:14.106] Cached successful response cache_key=ed59d49c... logger=CachingInterceptor request_id=91ae453b-9c69-43dc-964d-dbe4ba3966d0
+[I 2026-01-16T01:01:14.106] Request completed status_code=200 path= logger=root request_id=91ae453b-9c69-43dc-964d-dbe4ba3966d0
+[I 2026-01-16T01:01:14.107] 127.0.0.1 - - [16/Jan/2026 01:01:14] "POST / HTTP/1.1" 200 -
+  6% 12/198 [00:45<07:59,  2.58s/it][I 2026-01-16T01:01:14.845] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0079626d-e33d-474c-ba47-0d8ec4586aaa
+[W 2026-01-16T01:01:14.846] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0079626d-e33d-474c-ba47-0d8ec4586aaa
+[I 2026-01-16T01:01:15.232] Cached successful response cache_key=41078825... logger=CachingInterceptor request_id=778ed6d0-09d0-4b47-b930-4bb94d66b5d7
+[I 2026-01-16T01:01:15.232] Request completed status_code=200 path= logger=root request_id=778ed6d0-09d0-4b47-b930-4bb94d66b5d7
+[I 2026-01-16T01:01:15.233] 127.0.0.1 - - [16/Jan/2026 01:01:15] "POST / HTTP/1.1" 200 -
+  7% 13/198 [00:46<06:32,  2.12s/it][I 2026-01-16T01:01:15.910] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2e0ed829-7d5e-42b4-a14b-3e9c1f7b1dd3
+[W 2026-01-16T01:01:15.910] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2e0ed829-7d5e-42b4-a14b-3e9c1f7b1dd3
+[I 2026-01-16T01:01:18.370] Cached successful response cache_key=06256a4c... logger=CachingInterceptor request_id=c5cda65c-d704-4f37-bc0b-06aaa416a9ed
+[I 2026-01-16T01:01:18.370] Request completed status_code=200 path= logger=root request_id=c5cda65c-d704-4f37-bc0b-06aaa416a9ed
+[I 2026-01-16T01:01:18.371] 127.0.0.1 - - [16/Jan/2026 01:01:18] "POST / HTTP/1.1" 200 -
+  7% 14/198 [00:49<07:30,  2.45s/it][I 2026-01-16T01:01:19.113] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e810079a-53d2-4176-a2cd-c92d5208696e
+[W 2026-01-16T01:01:19.113] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=e810079a-53d2-4176-a2cd-c92d5208696e
+[I 2026-01-16T01:01:20.205] Cached successful response cache_key=4ce7756b... logger=CachingInterceptor request_id=0079626d-e33d-474c-ba47-0d8ec4586aaa
+[I 2026-01-16T01:01:20.206] Request completed status_code=200 path= logger=root request_id=0079626d-e33d-474c-ba47-0d8ec4586aaa
+[I 2026-01-16T01:01:20.207] 127.0.0.1 - - [16/Jan/2026 01:01:20] "POST / HTTP/1.1" 200 -
+  8% 15/198 [00:51<06:40,  2.19s/it][I 2026-01-16T01:01:20.701] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=af9e6b45-0dce-4f19-b116-b76799f038e7
+[W 2026-01-16T01:01:20.701] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=af9e6b45-0dce-4f19-b116-b76799f038e7
+[I 2026-01-16T01:01:21.488] Cached successful response cache_key=9009d673... logger=CachingInterceptor request_id=2e0ed829-7d5e-42b4-a14b-3e9c1f7b1dd3
+[I 2026-01-16T01:01:21.488] Request completed status_code=200 path= logger=root request_id=2e0ed829-7d5e-42b4-a14b-3e9c1f7b1dd3
+[I 2026-01-16T01:01:21.489] 127.0.0.1 - - [16/Jan/2026 01:01:21] "POST / HTTP/1.1" 200 -
+  8% 16/198 [00:52<05:54,  1.95s/it][I 2026-01-16T01:01:22.080] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6255b991-9e51-43c1-9611-8cc134d3d818
+[W 2026-01-16T01:01:22.081] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6255b991-9e51-43c1-9611-8cc134d3d818
+[I 2026-01-16T01:01:23.619] Cached successful response cache_key=7b01a648... logger=CachingInterceptor request_id=e810079a-53d2-4176-a2cd-c92d5208696e
+[I 2026-01-16T01:01:23.620] Request completed status_code=200 path= logger=root request_id=e810079a-53d2-4176-a2cd-c92d5208696e
+[I 2026-01-16T01:01:23.621] 127.0.0.1 - - [16/Jan/2026 01:01:23] "POST / HTTP/1.1" 200 -
+  9% 17/198 [00:54<06:00,  1.99s/it][I 2026-01-16T01:01:24.187] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=dae4606a-4c1f-4d87-a325-6366cbddcf74
+[W 2026-01-16T01:01:24.187] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=dae4606a-4c1f-4d87-a325-6366cbddcf74
+[I 2026-01-16T01:01:24.820] Cached successful response cache_key=730c2021... logger=CachingInterceptor request_id=698db45b-4147-45ed-a2e5-832325db1250
+[I 2026-01-16T01:01:24.820] Request completed status_code=200 path= logger=root request_id=698db45b-4147-45ed-a2e5-832325db1250
+[I 2026-01-16T01:01:24.821] 127.0.0.1 - - [16/Jan/2026 01:01:24] "POST / HTTP/1.1" 200 -
+  9% 18/198 [00:55<05:12,  1.74s/it][I 2026-01-16T01:01:25.320] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d42b5af4-3b23-4b01-82a5-75e8b72e7fce
+[W 2026-01-16T01:01:25.321] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d42b5af4-3b23-4b01-82a5-75e8b72e7fce
+[I 2026-01-16T01:01:26.916] Cached successful response cache_key=c24cb5af... logger=CachingInterceptor request_id=af9e6b45-0dce-4f19-b116-b76799f038e7
+[I 2026-01-16T01:01:26.916] Request completed status_code=200 path= logger=root request_id=af9e6b45-0dce-4f19-b116-b76799f038e7
+[I 2026-01-16T01:01:26.917] 127.0.0.1 - - [16/Jan/2026 01:01:26] "POST / HTTP/1.1" 200 -
+ 10% 19/198 [00:58<05:48,  1.94s/it][I 2026-01-16T01:01:27.752] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=efcaffa5-7a72-403a-81b7-e7b1690f086f
+[W 2026-01-16T01:01:27.752] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=efcaffa5-7a72-403a-81b7-e7b1690f086f
+[I 2026-01-16T01:01:27.923] Cached successful response cache_key=f1ce752e... logger=CachingInterceptor request_id=6255b991-9e51-43c1-9611-8cc134d3d818
+[I 2026-01-16T01:01:27.923] Request completed status_code=200 path= logger=root request_id=6255b991-9e51-43c1-9611-8cc134d3d818
+[I 2026-01-16T01:01:27.924] 127.0.0.1 - - [16/Jan/2026 01:01:27] "POST / HTTP/1.1" 200 -
+ 10% 20/198 [00:58<04:37,  1.56s/it][I 2026-01-16T01:01:28.418] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=87350bb3-5364-40f1-aa49-ba36a424a91d
+[W 2026-01-16T01:01:28.418] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=87350bb3-5364-40f1-aa49-ba36a424a91d
+[I 2026-01-16T01:01:32.468] Cached successful response cache_key=a97e4a46... logger=CachingInterceptor request_id=efcaffa5-7a72-403a-81b7-e7b1690f086f
+[I 2026-01-16T01:01:32.468] Request completed status_code=200 path= logger=root request_id=efcaffa5-7a72-403a-81b7-e7b1690f086f
+[I 2026-01-16T01:01:32.469] 127.0.0.1 - - [16/Jan/2026 01:01:32] "POST / HTTP/1.1" 200 -
+ 11% 21/198 [01:03<07:08,  2.42s/it][I 2026-01-16T01:01:32.843] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=65b1d8ee-ea1c-48a4-9f69-53f98d6a7646
+[W 2026-01-16T01:01:32.843] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=65b1d8ee-ea1c-48a4-9f69-53f98d6a7646
+[I 2026-01-16T01:01:36.894] Cached successful response cache_key=f6908499... logger=CachingInterceptor request_id=dae4606a-4c1f-4d87-a325-6366cbddcf74
+[I 2026-01-16T01:01:36.894] Request completed status_code=200 path= logger=root request_id=dae4606a-4c1f-4d87-a325-6366cbddcf74
+[I 2026-01-16T01:01:36.896] 127.0.0.1 - - [16/Jan/2026 01:01:36] "POST / HTTP/1.1" 200 -
+ 11% 22/198 [01:07<08:50,  3.01s/it][I 2026-01-16T01:01:37.300] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=94e401e1-01c4-4e8a-8320-1e65879742a6
+[W 2026-01-16T01:01:37.300] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=94e401e1-01c4-4e8a-8320-1e65879742a6
+[I 2026-01-16T01:01:38.141] Cached successful response cache_key=743be336... logger=CachingInterceptor request_id=d42b5af4-3b23-4b01-82a5-75e8b72e7fce
+[I 2026-01-16T01:01:38.141] Request completed status_code=200 path= logger=root request_id=d42b5af4-3b23-4b01-82a5-75e8b72e7fce
+[I 2026-01-16T01:01:38.142] 127.0.0.1 - - [16/Jan/2026 01:01:38] "POST / HTTP/1.1" 200 -
+ 12% 23/198 [01:09<07:23,  2.54s/it][I 2026-01-16T01:01:38.658] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9b3fa292-de15-401d-ba3d-0e94682d48eb
+[W 2026-01-16T01:01:38.659] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9b3fa292-de15-401d-ba3d-0e94682d48eb
+[I 2026-01-16T01:01:39.064] Cached successful response cache_key=14968000... logger=CachingInterceptor request_id=65b1d8ee-ea1c-48a4-9f69-53f98d6a7646
+[I 2026-01-16T01:01:39.064] Request completed status_code=200 path= logger=root request_id=65b1d8ee-ea1c-48a4-9f69-53f98d6a7646
+[I 2026-01-16T01:01:39.065] 127.0.0.1 - - [16/Jan/2026 01:01:39] "POST / HTTP/1.1" 200 -
+ 12% 24/198 [01:09<05:49,  2.01s/it][I 2026-01-16T01:01:39.438] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7fc0e762-9cfc-40f9-bb93-ef8e12ef2942
+[W 2026-01-16T01:01:39.438] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7fc0e762-9cfc-40f9-bb93-ef8e12ef2942
+[I 2026-01-16T01:01:41.521] Cached successful response cache_key=1fe025f0... logger=CachingInterceptor request_id=87350bb3-5364-40f1-aa49-ba36a424a91d
+[I 2026-01-16T01:01:41.521] Request completed status_code=200 path= logger=root request_id=87350bb3-5364-40f1-aa49-ba36a424a91d
+[I 2026-01-16T01:01:41.522] 127.0.0.1 - - [16/Jan/2026 01:01:41] "POST / HTTP/1.1" 200 -
+ 13% 25/198 [01:12<06:04,  2.11s/it][I 2026-01-16T01:01:41.782] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b44828b6-0c3b-4651-9025-899fbe0b83bc
+[W 2026-01-16T01:01:41.783] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b44828b6-0c3b-4651-9025-899fbe0b83bc
+[I 2026-01-16T01:01:45.301] Cached successful response cache_key=a0f50784... logger=CachingInterceptor request_id=7fc0e762-9cfc-40f9-bb93-ef8e12ef2942
+[I 2026-01-16T01:01:45.301] Request completed status_code=200 path= logger=root request_id=7fc0e762-9cfc-40f9-bb93-ef8e12ef2942
+[I 2026-01-16T01:01:45.302] 127.0.0.1 - - [16/Jan/2026 01:01:45] "POST / HTTP/1.1" 200 -
+ 13% 26/198 [01:16<07:39,  2.67s/it][I 2026-01-16T01:01:45.771] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5ba79a31-e243-46d8-ac30-6ea82ffdde24
+[W 2026-01-16T01:01:45.772] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5ba79a31-e243-46d8-ac30-6ea82ffdde24
+[I 2026-01-16T01:01:50.236] Cached successful response cache_key=f68de553... logger=CachingInterceptor request_id=94e401e1-01c4-4e8a-8320-1e65879742a6
+[I 2026-01-16T01:01:50.236] Request completed status_code=200 path= logger=root request_id=94e401e1-01c4-4e8a-8320-1e65879742a6
+[I 2026-01-16T01:01:50.237] 127.0.0.1 - - [16/Jan/2026 01:01:50] "POST / HTTP/1.1" 200 -
+ 14% 27/198 [01:20<09:23,  3.29s/it][I 2026-01-16T01:01:50.510] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=02366cf2-fd8b-4dc3-8109-c62f340332fb
+[W 2026-01-16T01:01:50.510] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=02366cf2-fd8b-4dc3-8109-c62f340332fb
+[I 2026-01-16T01:01:52.538] Cached successful response cache_key=bfc3f66b... logger=CachingInterceptor request_id=9b3fa292-de15-401d-ba3d-0e94682d48eb
+[I 2026-01-16T01:01:52.538] Request completed status_code=200 path= logger=root request_id=9b3fa292-de15-401d-ba3d-0e94682d48eb
+[I 2026-01-16T01:01:52.539] 127.0.0.1 - - [16/Jan/2026 01:01:52] "POST / HTTP/1.1" 200 -
+ 14% 28/198 [01:23<08:32,  3.02s/it][I 2026-01-16T01:01:52.879] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7b2878bc-102f-4019-8a83-6960659dbd18
+[W 2026-01-16T01:01:52.879] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7b2878bc-102f-4019-8a83-6960659dbd18
+[I 2026-01-16T01:01:53.124] Cached successful response cache_key=f7f666bc... logger=CachingInterceptor request_id=5ba79a31-e243-46d8-ac30-6ea82ffdde24
+[I 2026-01-16T01:01:53.124] Request completed status_code=200 path= logger=root request_id=5ba79a31-e243-46d8-ac30-6ea82ffdde24
+[I 2026-01-16T01:01:53.125] 127.0.0.1 - - [16/Jan/2026 01:01:53] "POST / HTTP/1.1" 200 -
+ 15% 29/198 [01:24<06:31,  2.31s/it][I 2026-01-16T01:01:53.555] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c494df54-2ab2-450c-ae8c-1aae85d4f114
+[W 2026-01-16T01:01:53.555] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c494df54-2ab2-450c-ae8c-1aae85d4f114
+[I 2026-01-16T01:01:54.681] Cached successful response cache_key=a21253ca... logger=CachingInterceptor request_id=b44828b6-0c3b-4651-9025-899fbe0b83bc
+[I 2026-01-16T01:01:54.681] Request completed status_code=200 path= logger=root request_id=b44828b6-0c3b-4651-9025-899fbe0b83bc
+[I 2026-01-16T01:01:54.682] 127.0.0.1 - - [16/Jan/2026 01:01:54] "POST / HTTP/1.1" 200 -
+ 15% 30/198 [01:25<05:54,  2.11s/it][I 2026-01-16T01:01:55.180] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=4a49258e-96b7-4710-8ea2-a60b2bfd12d1
+[W 2026-01-16T01:01:55.180] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=4a49258e-96b7-4710-8ea2-a60b2bfd12d1
+[I 2026-01-16T01:01:58.547] Cached successful response cache_key=91aa7636... logger=CachingInterceptor request_id=c494df54-2ab2-450c-ae8c-1aae85d4f114
+[I 2026-01-16T01:01:58.547] Request completed status_code=200 path= logger=root request_id=c494df54-2ab2-450c-ae8c-1aae85d4f114
+[I 2026-01-16T01:01:58.548] 127.0.0.1 - - [16/Jan/2026 01:01:58] "POST / HTTP/1.1" 200 -
+ 16% 31/198 [01:29<07:21,  2.64s/it][I 2026-01-16T01:01:59.101] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=76b0a111-2976-4467-b6ac-21522d553f1f
+[W 2026-01-16T01:01:59.101] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=76b0a111-2976-4467-b6ac-21522d553f1f
+[I 2026-01-16T01:01:59.762] Cached successful response cache_key=295c5452... logger=CachingInterceptor request_id=4a49258e-96b7-4710-8ea2-a60b2bfd12d1
+[I 2026-01-16T01:01:59.762] Request completed status_code=200 path= logger=root request_id=4a49258e-96b7-4710-8ea2-a60b2bfd12d1
+[I 2026-01-16T01:01:59.763] 127.0.0.1 - - [16/Jan/2026 01:01:59] "POST / HTTP/1.1" 200 -
+ 16% 32/198 [01:30<06:01,  2.18s/it][I 2026-01-16T01:02:00.172] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0d6c3890-6324-494e-a461-2b9832d856b6
+[W 2026-01-16T01:02:00.172] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0d6c3890-6324-494e-a461-2b9832d856b6
+[I 2026-01-16T01:02:03.707] Cached successful response cache_key=93559aed... logger=CachingInterceptor request_id=02366cf2-fd8b-4dc3-8109-c62f340332fb
+[I 2026-01-16T01:02:03.707] Request completed status_code=200 path= logger=root request_id=02366cf2-fd8b-4dc3-8109-c62f340332fb
+[I 2026-01-16T01:02:03.708] 127.0.0.1 - - [16/Jan/2026 01:02:03] "POST / HTTP/1.1" 200 -
+ 17% 33/198 [01:34<07:27,  2.71s/it][I 2026-01-16T01:02:04.119] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=37a2aeab-2b8b-4757-893a-ebe697992148
+[W 2026-01-16T01:02:04.119] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=37a2aeab-2b8b-4757-893a-ebe697992148
+[I 2026-01-16T01:02:05.628] Cached successful response cache_key=5d21a82f... logger=CachingInterceptor request_id=0d6c3890-6324-494e-a461-2b9832d856b6
+[I 2026-01-16T01:02:05.628] Request completed status_code=200 path= logger=root request_id=0d6c3890-6324-494e-a461-2b9832d856b6
+[I 2026-01-16T01:02:05.629] 127.0.0.1 - - [16/Jan/2026 01:02:05] "POST / HTTP/1.1" 200 -
+ 17% 34/198 [01:36<06:58,  2.55s/it][I 2026-01-16T01:02:06.312] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=555b6a24-f683-4cd5-a413-3587cd79f72b
+[W 2026-01-16T01:02:06.312] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=555b6a24-f683-4cd5-a413-3587cd79f72b
+[I 2026-01-16T01:02:06.974] Cached successful response cache_key=90a43d16... logger=CachingInterceptor request_id=7b2878bc-102f-4019-8a83-6960659dbd18
+[I 2026-01-16T01:02:06.974] Request completed status_code=200 path= logger=root request_id=7b2878bc-102f-4019-8a83-6960659dbd18
+[I 2026-01-16T01:02:06.975] 127.0.0.1 - - [16/Jan/2026 01:02:06] "POST / HTTP/1.1" 200 -
+ 18% 35/198 [01:38<05:54,  2.18s/it][I 2026-01-16T01:02:07.604] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bd4d081f-b5f9-4e49-93d5-28a27f42a0c8
+[W 2026-01-16T01:02:07.604] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=bd4d081f-b5f9-4e49-93d5-28a27f42a0c8
+[I 2026-01-16T01:02:10.758] Cached successful response cache_key=d6f56a81... logger=CachingInterceptor request_id=37a2aeab-2b8b-4757-893a-ebe697992148
+[I 2026-01-16T01:02:10.758] Request completed status_code=200 path= logger=root request_id=37a2aeab-2b8b-4757-893a-ebe697992148
+[I 2026-01-16T01:02:10.759] 127.0.0.1 - - [16/Jan/2026 01:02:10] "POST / HTTP/1.1" 200 -
+ 18% 36/198 [01:41<06:53,  2.55s/it][I 2026-01-16T01:02:11.042] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=48451779-0973-4aa1-b97b-d2187dc1b686
+[W 2026-01-16T01:02:11.042] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=48451779-0973-4aa1-b97b-d2187dc1b686
+[I 2026-01-16T01:02:12.268] Cached successful response cache_key=3c30c23a... logger=CachingInterceptor request_id=555b6a24-f683-4cd5-a413-3587cd79f72b
+[I 2026-01-16T01:02:12.269] Request completed status_code=200 path= logger=root request_id=555b6a24-f683-4cd5-a413-3587cd79f72b
+[I 2026-01-16T01:02:12.269] 127.0.0.1 - - [16/Jan/2026 01:02:12] "POST / HTTP/1.1" 200 -
+ 19% 37/198 [01:43<06:16,  2.34s/it][I 2026-01-16T01:02:12.873] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=db7fff7f-1f01-4116-b50c-7ee42a1949c0
+[W 2026-01-16T01:02:12.874] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=db7fff7f-1f01-4116-b50c-7ee42a1949c0
+[I 2026-01-16T01:02:14.594] Cached successful response cache_key=b155f7e6... logger=CachingInterceptor request_id=76b0a111-2976-4467-b6ac-21522d553f1f
+[I 2026-01-16T01:02:14.594] Request completed status_code=200 path= logger=root request_id=76b0a111-2976-4467-b6ac-21522d553f1f
+[I 2026-01-16T01:02:14.595] 127.0.0.1 - - [16/Jan/2026 01:02:14] "POST / HTTP/1.1" 200 -
+ 19% 38/198 [01:45<06:09,  2.31s/it][I 2026-01-16T01:02:15.119] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=11b4c32c-9f59-4ffb-af34-128ca22860d1
+[W 2026-01-16T01:02:15.120] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=11b4c32c-9f59-4ffb-af34-128ca22860d1
+[I 2026-01-16T01:02:15.599] Cached successful response cache_key=c2a5fe67... logger=CachingInterceptor request_id=bd4d081f-b5f9-4e49-93d5-28a27f42a0c8
+[I 2026-01-16T01:02:15.599] Request completed status_code=200 path= logger=root request_id=bd4d081f-b5f9-4e49-93d5-28a27f42a0c8
+[I 2026-01-16T01:02:15.600] 127.0.0.1 - - [16/Jan/2026 01:02:15] "POST / HTTP/1.1" 200 -
+ 20% 39/198 [01:46<05:04,  1.92s/it][I 2026-01-16T01:02:16.116] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=4294f807-4c46-4905-8694-fe25b81e95f6
+[W 2026-01-16T01:02:16.117] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=4294f807-4c46-4905-8694-fe25b81e95f6
+[I 2026-01-16T01:02:19.370] Cached successful response cache_key=38931cf5... logger=CachingInterceptor request_id=48451779-0973-4aa1-b97b-d2187dc1b686
+[I 2026-01-16T01:02:19.370] Request completed status_code=200 path= logger=root request_id=48451779-0973-4aa1-b97b-d2187dc1b686
+[I 2026-01-16T01:02:19.371] 127.0.0.1 - - [16/Jan/2026 01:02:19] "POST / HTTP/1.1" 200 -
+ 20% 40/198 [01:50<06:21,  2.42s/it][I 2026-01-16T01:02:19.704] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3943e823-1ea0-442e-8a81-6142971d4296
+[W 2026-01-16T01:02:19.704] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3943e823-1ea0-442e-8a81-6142971d4296
+[I 2026-01-16T01:02:20.149] Cached successful response cache_key=73050995... logger=CachingInterceptor request_id=db7fff7f-1f01-4116-b50c-7ee42a1949c0
+[I 2026-01-16T01:02:20.149] Request completed status_code=200 path= logger=root request_id=db7fff7f-1f01-4116-b50c-7ee42a1949c0
+[I 2026-01-16T01:02:20.150] 127.0.0.1 - - [16/Jan/2026 01:02:20] "POST / HTTP/1.1" 200 -
+ 21% 41/198 [01:51<05:09,  1.97s/it][I 2026-01-16T01:02:20.632] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9e34da15-acbd-4c18-9234-8836666d9c06
+[W 2026-01-16T01:02:20.632] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9e34da15-acbd-4c18-9234-8836666d9c06
+[I 2026-01-16T01:02:21.334] Cached successful response cache_key=24c803fc... logger=CachingInterceptor request_id=11b4c32c-9f59-4ffb-af34-128ca22860d1
+[I 2026-01-16T01:02:21.334] Request completed status_code=200 path= logger=root request_id=11b4c32c-9f59-4ffb-af34-128ca22860d1
+[I 2026-01-16T01:02:21.335] 127.0.0.1 - - [16/Jan/2026 01:02:21] "POST / HTTP/1.1" 200 -
+ 21% 42/198 [01:52<04:30,  1.73s/it][I 2026-01-16T01:02:21.815] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c2d0af83-1d1a-4488-b00e-eed5cbebc9a9
+[W 2026-01-16T01:02:21.815] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c2d0af83-1d1a-4488-b00e-eed5cbebc9a9
+[I 2026-01-16T01:02:22.207] Cached successful response cache_key=303fda3d... logger=CachingInterceptor request_id=4294f807-4c46-4905-8694-fe25b81e95f6
+[I 2026-01-16T01:02:22.207] Request completed status_code=200 path= logger=root request_id=4294f807-4c46-4905-8694-fe25b81e95f6
+[I 2026-01-16T01:02:22.208] 127.0.0.1 - - [16/Jan/2026 01:02:22] "POST / HTTP/1.1" 200 -
+ 22% 43/198 [01:53<03:47,  1.47s/it][I 2026-01-16T01:02:22.663] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e71d2771-afe7-42fd-990e-1a70b8308bc8
+[W 2026-01-16T01:02:22.663] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=e71d2771-afe7-42fd-990e-1a70b8308bc8
+[I 2026-01-16T01:02:23.867] Cached successful response cache_key=fbf57763... logger=CachingInterceptor request_id=3943e823-1ea0-442e-8a81-6142971d4296
+[I 2026-01-16T01:02:23.867] Request completed status_code=200 path= logger=root request_id=3943e823-1ea0-442e-8a81-6142971d4296
+[I 2026-01-16T01:02:23.868] 127.0.0.1 - - [16/Jan/2026 01:02:23] "POST / HTTP/1.1" 200 -
+ 22% 44/198 [01:54<03:57,  1.55s/it][I 2026-01-16T01:02:24.388] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b9fc85b5-3b06-4c84-8093-f82d5837c5f6
+[W 2026-01-16T01:02:24.388] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b9fc85b5-3b06-4c84-8093-f82d5837c5f6
+[I 2026-01-16T01:02:33.329] Cached successful response cache_key=ead117de... logger=CachingInterceptor request_id=9e34da15-acbd-4c18-9234-8836666d9c06
+[I 2026-01-16T01:02:33.329] Request completed status_code=200 path= logger=root request_id=9e34da15-acbd-4c18-9234-8836666d9c06
+[I 2026-01-16T01:02:33.330] 127.0.0.1 - - [16/Jan/2026 01:02:33] "POST / HTTP/1.1" 200 -
+ 23% 45/198 [02:04<09:54,  3.89s/it][I 2026-01-16T01:02:33.742] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5cd9edb8-6bbf-4b7b-a32a-4f159d151c71
+[W 2026-01-16T01:02:33.742] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5cd9edb8-6bbf-4b7b-a32a-4f159d151c71
+[I 2026-01-16T01:02:36.009] Cached successful response cache_key=11c2e010... logger=CachingInterceptor request_id=c2d0af83-1d1a-4488-b00e-eed5cbebc9a9
+[I 2026-01-16T01:02:36.010] Request completed status_code=200 path= logger=root request_id=c2d0af83-1d1a-4488-b00e-eed5cbebc9a9
+[I 2026-01-16T01:02:36.011] 127.0.0.1 - - [16/Jan/2026 01:02:36] "POST / HTTP/1.1" 200 -
+ 23% 46/198 [02:06<08:57,  3.54s/it][I 2026-01-16T01:02:36.457] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3598a3eb-6023-4308-844a-5696d2a41e06
+[W 2026-01-16T01:02:36.457] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3598a3eb-6023-4308-844a-5696d2a41e06
+[I 2026-01-16T01:02:36.925] Cached successful response cache_key=5fc5e3e4... logger=CachingInterceptor request_id=e71d2771-afe7-42fd-990e-1a70b8308bc8
+[I 2026-01-16T01:02:36.925] Request completed status_code=200 path= logger=root request_id=e71d2771-afe7-42fd-990e-1a70b8308bc8
+[I 2026-01-16T01:02:36.926] 127.0.0.1 - - [16/Jan/2026 01:02:36] "POST / HTTP/1.1" 200 -
+ 24% 47/198 [02:07<06:52,  2.74s/it][I 2026-01-16T01:02:37.322] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e6c89723-f176-4f3b-9395-367e98308fb3
+[W 2026-01-16T01:02:37.323] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=e6c89723-f176-4f3b-9395-367e98308fb3
+[I 2026-01-16T01:02:38.264] Cached successful response cache_key=f02cb104... logger=CachingInterceptor request_id=b9fc85b5-3b06-4c84-8093-f82d5837c5f6
+[I 2026-01-16T01:02:38.265] Request completed status_code=200 path= logger=root request_id=b9fc85b5-3b06-4c84-8093-f82d5837c5f6
+[I 2026-01-16T01:02:38.266] 127.0.0.1 - - [16/Jan/2026 01:02:38] "POST / HTTP/1.1" 200 -
+ 24% 48/198 [02:09<06:01,  2.41s/it][I 2026-01-16T01:02:38.973] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=37793a1a-ef11-4d3d-8898-31209dffc79b
+[W 2026-01-16T01:02:38.973] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=37793a1a-ef11-4d3d-8898-31209dffc79b
+[I 2026-01-16T01:02:39.627] Cached successful response cache_key=a910deed... logger=CachingInterceptor request_id=5cd9edb8-6bbf-4b7b-a32a-4f159d151c71
+[I 2026-01-16T01:02:39.627] Request completed status_code=200 path= logger=root request_id=5cd9edb8-6bbf-4b7b-a32a-4f159d151c71
+[I 2026-01-16T01:02:39.629] 127.0.0.1 - - [16/Jan/2026 01:02:39] "POST / HTTP/1.1" 200 -
+ 25% 49/198 [02:10<05:10,  2.09s/it][I 2026-01-16T01:02:40.301] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=54faa15f-063c-43f4-a4a3-5ac6cad43b9e
+[W 2026-01-16T01:02:40.302] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=54faa15f-063c-43f4-a4a3-5ac6cad43b9e
+[I 2026-01-16T01:02:41.502] Cached successful response cache_key=cd1df4fc... logger=CachingInterceptor request_id=3598a3eb-6023-4308-844a-5696d2a41e06
+[I 2026-01-16T01:02:41.503] Request completed status_code=200 path= logger=root request_id=3598a3eb-6023-4308-844a-5696d2a41e06
+[I 2026-01-16T01:02:41.504] 127.0.0.1 - - [16/Jan/2026 01:02:41] "POST / HTTP/1.1" 200 -
+ 25% 50/198 [02:12<04:50,  1.96s/it][I 2026-01-16T01:02:41.969] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=447baa3b-6eac-488b-abca-69049bfaf08b
+[W 2026-01-16T01:02:41.969] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=447baa3b-6eac-488b-abca-69049bfaf08b
+[I 2026-01-16T01:02:43.002] Cached successful response cache_key=eb88a59b... logger=CachingInterceptor request_id=e6c89723-f176-4f3b-9395-367e98308fb3
+[I 2026-01-16T01:02:43.002] Request completed status_code=200 path= logger=root request_id=e6c89723-f176-4f3b-9395-367e98308fb3
+[I 2026-01-16T01:02:43.003] 127.0.0.1 - - [16/Jan/2026 01:02:43] "POST / HTTP/1.1" 200 -
+ 26% 51/198 [02:13<04:26,  1.81s/it][I 2026-01-16T01:02:43.429] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f565419c-0553-43b5-8129-efc2fab6fa90
+[W 2026-01-16T01:02:43.429] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f565419c-0553-43b5-8129-efc2fab6fa90
+[I 2026-01-16T01:02:43.969] Cached successful response cache_key=068c53f4... logger=CachingInterceptor request_id=37793a1a-ef11-4d3d-8898-31209dffc79b
+[I 2026-01-16T01:02:43.970] Request completed status_code=200 path= logger=root request_id=37793a1a-ef11-4d3d-8898-31209dffc79b
+[I 2026-01-16T01:02:43.971] 127.0.0.1 - - [16/Jan/2026 01:02:43] "POST / HTTP/1.1" 200 -
+ 26% 52/198 [02:15<04:01,  1.66s/it][I 2026-01-16T01:02:44.729] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=46297ca3-30df-4dc8-8a13-d6972b5c9b23
+[W 2026-01-16T01:02:44.730] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=46297ca3-30df-4dc8-8a13-d6972b5c9b23
+[I 2026-01-16T01:02:46.763] Cached successful response cache_key=f2a6a557... logger=CachingInterceptor request_id=54faa15f-063c-43f4-a4a3-5ac6cad43b9e
+[I 2026-01-16T01:02:46.763] Request completed status_code=200 path= logger=root request_id=54faa15f-063c-43f4-a4a3-5ac6cad43b9e
+[I 2026-01-16T01:02:46.764] 127.0.0.1 - - [16/Jan/2026 01:02:46] "POST / HTTP/1.1" 200 -
+ 27% 53/198 [02:17<04:33,  1.89s/it][I 2026-01-16T01:02:47.159] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b5246fe3-d6c3-496d-9bd5-b32a687e8653
+[W 2026-01-16T01:02:47.159] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b5246fe3-d6c3-496d-9bd5-b32a687e8653
+[I 2026-01-16T01:03:15.268] Cached successful response cache_key=91035497... logger=CachingInterceptor request_id=46297ca3-30df-4dc8-8a13-d6972b5c9b23
+[I 2026-01-16T01:03:15.268] Request completed status_code=200 path= logger=root request_id=46297ca3-30df-4dc8-8a13-d6972b5c9b23
+[I 2026-01-16T01:03:15.269] 127.0.0.1 - - [16/Jan/2026 01:03:15] "POST / HTTP/1.1" 200 -
+ 27% 54/198 [02:46<23:39,  9.86s/it][I 2026-01-16T01:03:15.604] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=cf43f9dc-f2d6-4bc0-8fc2-0829f6b6814d
+[W 2026-01-16T01:03:15.605] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=cf43f9dc-f2d6-4bc0-8fc2-0829f6b6814d
+[I 2026-01-16T01:03:30.218] Cached successful response cache_key=d83387a7... logger=CachingInterceptor request_id=447baa3b-6eac-488b-abca-69049bfaf08b
+[I 2026-01-16T01:03:30.218] Request completed status_code=200 path= logger=root request_id=447baa3b-6eac-488b-abca-69049bfaf08b
+[I 2026-01-16T01:03:30.219] 127.0.0.1 - - [16/Jan/2026 01:03:30] "POST / HTTP/1.1" 200 -
+ 28% 55/198 [03:01<27:08, 11.39s/it][I 2026-01-16T01:03:30.562] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=49084751-142c-42d5-a1ae-41aaddfe4531
+[W 2026-01-16T01:03:30.562] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=49084751-142c-42d5-a1ae-41aaddfe4531
+[I 2026-01-16T01:03:35.843] Cached successful response cache_key=500c0ad5... logger=CachingInterceptor request_id=f565419c-0553-43b5-8129-efc2fab6fa90
+[I 2026-01-16T01:03:35.843] Request completed status_code=200 path= logger=root request_id=f565419c-0553-43b5-8129-efc2fab6fa90
+[I 2026-01-16T01:03:35.844] 127.0.0.1 - - [16/Jan/2026 01:03:35] "POST / HTTP/1.1" 200 -
+ 28% 56/198 [03:06<22:56,  9.69s/it][I 2026-01-16T01:03:36.304] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=200047c0-a5aa-4b32-a891-322f7ab7ee48
+[W 2026-01-16T01:03:36.304] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=200047c0-a5aa-4b32-a891-322f7ab7ee48
+[I 2026-01-16T01:03:36.629] Cached successful response cache_key=b3aa3170... logger=CachingInterceptor request_id=b5246fe3-d6c3-496d-9bd5-b32a687e8653
+[I 2026-01-16T01:03:36.630] Request completed status_code=200 path= logger=root request_id=b5246fe3-d6c3-496d-9bd5-b32a687e8653
+[I 2026-01-16T01:03:36.631] 127.0.0.1 - - [16/Jan/2026 01:03:36] "POST / HTTP/1.1" 200 -
+ 29% 57/198 [03:07<16:33,  7.04s/it][I 2026-01-16T01:03:37.168] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=64d52c36-c88f-4f68-9c6c-d501d1d5842c
+[W 2026-01-16T01:03:37.168] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=64d52c36-c88f-4f68-9c6c-d501d1d5842c
+[I 2026-01-16T01:03:37.544] Cached successful response cache_key=381779ac... logger=CachingInterceptor request_id=cf43f9dc-f2d6-4bc0-8fc2-0829f6b6814d
+[I 2026-01-16T01:03:37.544] Request completed status_code=200 path= logger=root request_id=cf43f9dc-f2d6-4bc0-8fc2-0829f6b6814d
+[I 2026-01-16T01:03:37.545] 127.0.0.1 - - [16/Jan/2026 01:03:37] "POST / HTTP/1.1" 200 -
+ 29% 58/198 [03:08<12:05,  5.18s/it][I 2026-01-16T01:03:38.004] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2eccaad7-7a56-4c5f-81c0-d0466ac9c7b4
+[W 2026-01-16T01:03:38.005] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2eccaad7-7a56-4c5f-81c0-d0466ac9c7b4
+[I 2026-01-16T01:03:41.721] Cached successful response cache_key=acc64630... logger=CachingInterceptor request_id=64d52c36-c88f-4f68-9c6c-d501d1d5842c
+[I 2026-01-16T01:03:41.722] Request completed status_code=200 path= logger=root request_id=64d52c36-c88f-4f68-9c6c-d501d1d5842c
+[I 2026-01-16T01:03:41.723] 127.0.0.1 - - [16/Jan/2026 01:03:41] "POST / HTTP/1.1" 200 -
+ 30% 59/198 [03:12<11:19,  4.89s/it][I 2026-01-16T01:03:42.214] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=be8f029d-1298-45e4-9031-db0b4d54afe8
+[W 2026-01-16T01:03:42.214] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=be8f029d-1298-45e4-9031-db0b4d54afe8
+[I 2026-01-16T01:03:44.286] Cached successful response cache_key=9d560acb... logger=CachingInterceptor request_id=2eccaad7-7a56-4c5f-81c0-d0466ac9c7b4
+[I 2026-01-16T01:03:44.286] Request completed status_code=200 path= logger=root request_id=2eccaad7-7a56-4c5f-81c0-d0466ac9c7b4
+[I 2026-01-16T01:03:44.287] 127.0.0.1 - - [16/Jan/2026 01:03:44] "POST / HTTP/1.1" 200 -
+ 30% 60/198 [03:15<09:54,  4.30s/it][I 2026-01-16T01:03:45.152] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=497bb866-f1c2-42bd-931f-b08640803204
+[W 2026-01-16T01:03:45.152] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=497bb866-f1c2-42bd-931f-b08640803204
+[I 2026-01-16T01:03:45.598] Cached successful response cache_key=5da1f50b... logger=CachingInterceptor request_id=200047c0-a5aa-4b32-a891-322f7ab7ee48
+[I 2026-01-16T01:03:45.598] Request completed status_code=200 path= logger=root request_id=200047c0-a5aa-4b32-a891-322f7ab7ee48
+[I 2026-01-16T01:03:45.599] 127.0.0.1 - - [16/Jan/2026 01:03:45] "POST / HTTP/1.1" 200 -
+ 31% 61/198 [03:16<07:29,  3.28s/it][I 2026-01-16T01:03:46.046] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d6821fe0-9d83-462e-ab27-c2cdfe0e8b5f
+[W 2026-01-16T01:03:46.047] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d6821fe0-9d83-462e-ab27-c2cdfe0e8b5f
+[I 2026-01-16T01:03:46.546] Cached successful response cache_key=b6cd0462... logger=CachingInterceptor request_id=49084751-142c-42d5-a1ae-41aaddfe4531
+[I 2026-01-16T01:03:46.547] Request completed status_code=200 path= logger=root request_id=49084751-142c-42d5-a1ae-41aaddfe4531
+[I 2026-01-16T01:03:46.548] 127.0.0.1 - - [16/Jan/2026 01:03:46] "POST / HTTP/1.1" 200 -
+ 31% 62/198 [03:17<05:53,  2.60s/it][I 2026-01-16T01:03:47.045] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b47b8195-1222-460c-8168-27440ece647d
+[W 2026-01-16T01:03:47.045] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b47b8195-1222-460c-8168-27440ece647d
+[I 2026-01-16T01:03:50.070] Cached successful response cache_key=06a16842... logger=CachingInterceptor request_id=497bb866-f1c2-42bd-931f-b08640803204
+[I 2026-01-16T01:03:50.070] Request completed status_code=200 path= logger=root request_id=497bb866-f1c2-42bd-931f-b08640803204
+[I 2026-01-16T01:03:50.099] 127.0.0.1 - - [16/Jan/2026 01:03:50] "POST / HTTP/1.1" 200 -
+ 32% 63/198 [03:20<06:23,  2.84s/it][I 2026-01-16T01:03:50.456] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b3633a8b-477a-4ece-aef5-b2f14eade6c7
+[W 2026-01-16T01:03:50.456] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b3633a8b-477a-4ece-aef5-b2f14eade6c7
+[I 2026-01-16T01:03:51.596] Cached successful response cache_key=deccb499... logger=CachingInterceptor request_id=d6821fe0-9d83-462e-ab27-c2cdfe0e8b5f
+[I 2026-01-16T01:03:51.596] Request completed status_code=200 path= logger=root request_id=d6821fe0-9d83-462e-ab27-c2cdfe0e8b5f
+[I 2026-01-16T01:03:51.599] 127.0.0.1 - - [16/Jan/2026 01:03:51] "POST / HTTP/1.1" 200 -
+ 32% 64/198 [03:22<05:30,  2.47s/it][I 2026-01-16T01:03:52.056] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d7a380d0-3100-4aa9-8748-466110152723
+[W 2026-01-16T01:03:52.056] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d7a380d0-3100-4aa9-8748-466110152723
+[I 2026-01-16T01:03:52.229] Cached successful response cache_key=59ae541f... logger=CachingInterceptor request_id=b47b8195-1222-460c-8168-27440ece647d
+[I 2026-01-16T01:03:52.229] Request completed status_code=200 path= logger=root request_id=b47b8195-1222-460c-8168-27440ece647d
+[I 2026-01-16T01:03:52.230] 127.0.0.1 - - [16/Jan/2026 01:03:52] "POST / HTTP/1.1" 200 -
+ 33% 65/198 [03:23<04:19,  1.95s/it][I 2026-01-16T01:03:52.803] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f852c97c-8452-472a-96ef-ab6873716836
+[W 2026-01-16T01:03:52.803] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f852c97c-8452-472a-96ef-ab6873716836
+[I 2026-01-16T01:04:21.755] Cached successful response cache_key=65cf4a4b... logger=CachingInterceptor request_id=be8f029d-1298-45e4-9031-db0b4d54afe8
+[I 2026-01-16T01:04:21.756] Request completed status_code=200 path= logger=root request_id=be8f029d-1298-45e4-9031-db0b4d54afe8
+[I 2026-01-16T01:04:21.757] 127.0.0.1 - - [16/Jan/2026 01:04:21] "POST / HTTP/1.1" 200 -
+ 33% 66/198 [03:52<22:18, 10.14s/it][I 2026-01-16T01:04:22.058] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=973d8b0b-58ab-422a-89c4-26d18531dc38
+[W 2026-01-16T01:04:22.058] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=973d8b0b-58ab-422a-89c4-26d18531dc38
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T01:04:53.101] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5648795f-3504-43a0-b485-23b32ce71621
+[W 2026-01-16T01:04:53.102] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5648795f-3504-43a0-b485-23b32ce71621
+[I 2026-01-16T01:04:53.317] Cached successful response cache_key=da612dcd... logger=CachingInterceptor request_id=d7a380d0-3100-4aa9-8748-466110152723
+[I 2026-01-16T01:04:53.317] Request completed status_code=200 path= logger=root request_id=d7a380d0-3100-4aa9-8748-466110152723
+[I 2026-01-16T01:04:53.318] 127.0.0.1 - - [16/Jan/2026 01:04:53] "POST / HTTP/1.1" 200 -
+[I 2026-01-16T01:04:54.019] Cached successful response cache_key=b9708a4c... logger=CachingInterceptor request_id=b3633a8b-477a-4ece-aef5-b2f14eade6c7
+[I 2026-01-16T01:04:54.020] Request completed status_code=200 path= logger=root request_id=b3633a8b-477a-4ece-aef5-b2f14eade6c7
+[I 2026-01-16T01:04:54.021] 127.0.0.1 - - [16/Jan/2026 01:04:54] "POST / HTTP/1.1" 200 -
+[I 2026-01-16T01:04:55.007] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=864f0f15-c398-4f87-99ef-7fdd54ec37da
+[W 2026-01-16T01:04:55.007] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=864f0f15-c398-4f87-99ef-7fdd54ec37da
+[I 2026-01-16T01:04:55.008] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=55481ade-9529-4a07-8ac4-17aad18aa7ec
+[W 2026-01-16T01:04:55.008] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=55481ade-9529-4a07-8ac4-17aad18aa7ec
+[I 2026-01-16T01:04:55.991] Returning cached response cache_key=da612dcd... status_code=200 logger=CachingInterceptor request_id=864f0f15-c398-4f87-99ef-7fdd54ec37da
+[I 2026-01-16T01:04:55.992] Request completed status_code=200 path= logger=root request_id=864f0f15-c398-4f87-99ef-7fdd54ec37da
+[I 2026-01-16T01:04:55.992] 127.0.0.1 - - [16/Jan/2026 01:04:55] "POST / HTTP/1.1" 200 -
+ 34% 67/198 [04:26<38:00, 17.41s/it][I 2026-01-16T01:04:56.427] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ba8d9e77-59b8-40f2-9d07-a579946e6893
+[W 2026-01-16T01:04:56.427] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ba8d9e77-59b8-40f2-9d07-a579946e6893
+[I 2026-01-16T01:04:56.848] Cached successful response cache_key=057d52f8... logger=CachingInterceptor request_id=f852c97c-8452-472a-96ef-ab6873716836
+[I 2026-01-16T01:04:56.848] Request completed status_code=200 path= logger=root request_id=f852c97c-8452-472a-96ef-ab6873716836
+[I 2026-01-16T01:04:56.849] 127.0.0.1 - - [16/Jan/2026 01:04:56] "POST / HTTP/1.1" 200 -
+[I 2026-01-16T01:04:58.104] Cached successful response cache_key=bfb3b363... logger=CachingInterceptor request_id=973d8b0b-58ab-422a-89c4-26d18531dc38
+[I 2026-01-16T01:04:58.104] Request completed status_code=200 path= logger=root request_id=973d8b0b-58ab-422a-89c4-26d18531dc38
+[I 2026-01-16T01:04:58.105] 127.0.0.1 - - [16/Jan/2026 01:04:58] "POST / HTTP/1.1" 200 -
+ 34% 68/198 [04:29<27:53, 12.87s/it][I 2026-01-16T01:04:58.701] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=032c45c5-71ed-4bf4-93c8-13d88d8c5ce2
+[W 2026-01-16T01:04:58.701] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=032c45c5-71ed-4bf4-93c8-13d88d8c5ce2
+[I 2026-01-16T01:05:00.013] Cached successful response cache_key=b9708a4c... logger=CachingInterceptor request_id=5648795f-3504-43a0-b485-23b32ce71621
+[I 2026-01-16T01:05:00.013] Request completed status_code=200 path= logger=root request_id=5648795f-3504-43a0-b485-23b32ce71621
+[I 2026-01-16T01:05:00.014] 127.0.0.1 - - [16/Jan/2026 01:05:00] "POST / HTTP/1.1" 200 -
+ 35% 69/198 [04:30<20:30,  9.54s/it][I 2026-01-16T01:05:00.472] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9f029a45-c615-488a-a823-8d8de95be8f9
+[W 2026-01-16T01:05:00.473] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9f029a45-c615-488a-a823-8d8de95be8f9
+[I 2026-01-16T01:05:00.881] Cached successful response cache_key=057d52f8... logger=CachingInterceptor request_id=55481ade-9529-4a07-8ac4-17aad18aa7ec
+[I 2026-01-16T01:05:00.881] Request completed status_code=200 path= logger=root request_id=55481ade-9529-4a07-8ac4-17aad18aa7ec
+[I 2026-01-16T01:05:00.882] 127.0.0.1 - - [16/Jan/2026 01:05:00] "POST / HTTP/1.1" 200 -
+ 35% 70/198 [04:31<14:47,  6.94s/it][I 2026-01-16T01:05:01.332] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=206fd595-b456-4ba2-86d4-b0cddbfee9ba
+[W 2026-01-16T01:05:01.332] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=206fd595-b456-4ba2-86d4-b0cddbfee9ba
+[I 2026-01-16T01:05:03.596] Cached successful response cache_key=ca05c8c9... logger=CachingInterceptor request_id=032c45c5-71ed-4bf4-93c8-13d88d8c5ce2
+[I 2026-01-16T01:05:03.596] Request completed status_code=200 path= logger=root request_id=032c45c5-71ed-4bf4-93c8-13d88d8c5ce2
+[I 2026-01-16T01:05:03.597] 127.0.0.1 - - [16/Jan/2026 01:05:03] "POST / HTTP/1.1" 200 -
+ 36% 71/198 [04:34<12:09,  5.74s/it][I 2026-01-16T01:05:04.293] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0f08e6c2-ea69-47d0-a4cc-fef00532eac8
+[W 2026-01-16T01:05:04.293] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0f08e6c2-ea69-47d0-a4cc-fef00532eac8
+[I 2026-01-16T01:05:06.568] Cached successful response cache_key=1950cea6... logger=CachingInterceptor request_id=206fd595-b456-4ba2-86d4-b0cddbfee9ba
+[I 2026-01-16T01:05:06.568] Request completed status_code=200 path= logger=root request_id=206fd595-b456-4ba2-86d4-b0cddbfee9ba
+[I 2026-01-16T01:05:06.570] 127.0.0.1 - - [16/Jan/2026 01:05:06] "POST / HTTP/1.1" 200 -
+ 36% 72/198 [04:37<10:07,  4.82s/it][I 2026-01-16T01:05:06.962] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c22f8d76-1252-4032-9bb9-d9d20f8ab826
+[W 2026-01-16T01:05:06.962] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c22f8d76-1252-4032-9bb9-d9d20f8ab826
+[I 2026-01-16T01:05:10.604] Cached successful response cache_key=9754d322... logger=CachingInterceptor request_id=ba8d9e77-59b8-40f2-9d07-a579946e6893
+[I 2026-01-16T01:05:10.604] Request completed status_code=200 path= logger=root request_id=ba8d9e77-59b8-40f2-9d07-a579946e6893
+[I 2026-01-16T01:05:10.606] 127.0.0.1 - - [16/Jan/2026 01:05:10] "POST / HTTP/1.1" 200 -
+ 37% 73/198 [04:41<09:36,  4.61s/it][I 2026-01-16T01:05:11.100] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=831b2b5e-5022-4e42-b5d7-aef3760fdc62
+[W 2026-01-16T01:05:11.100] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=831b2b5e-5022-4e42-b5d7-aef3760fdc62
+[I 2026-01-16T01:05:13.985] Cached successful response cache_key=9873dae7... logger=CachingInterceptor request_id=9f029a45-c615-488a-a823-8d8de95be8f9
+[I 2026-01-16T01:05:13.985] Request completed status_code=200 path= logger=root request_id=9f029a45-c615-488a-a823-8d8de95be8f9
+[I 2026-01-16T01:05:13.986] 127.0.0.1 - - [16/Jan/2026 01:05:13] "POST / HTTP/1.1" 200 -
+ 37% 74/198 [04:44<08:42,  4.21s/it][I 2026-01-16T01:05:14.359] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b003e587-2952-4e21-bb67-eae6ca61373c
+[W 2026-01-16T01:05:14.359] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b003e587-2952-4e21-bb67-eae6ca61373c
+[I 2026-01-16T01:05:17.330] Cached successful response cache_key=6ac96d98... logger=CachingInterceptor request_id=0f08e6c2-ea69-47d0-a4cc-fef00532eac8
+[I 2026-01-16T01:05:17.330] Request completed status_code=200 path= logger=root request_id=0f08e6c2-ea69-47d0-a4cc-fef00532eac8
+[I 2026-01-16T01:05:17.332] 127.0.0.1 - - [16/Jan/2026 01:05:17] "POST / HTTP/1.1" 200 -
+ 38% 75/198 [04:48<08:10,  3.99s/it][I 2026-01-16T01:05:17.831] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6196594d-4603-42a9-b3e9-77408ea1c8fa
+[W 2026-01-16T01:05:17.831] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6196594d-4603-42a9-b3e9-77408ea1c8fa
+[I 2026-01-16T01:05:19.962] Cached successful response cache_key=433feb66... logger=CachingInterceptor request_id=c22f8d76-1252-4032-9bb9-d9d20f8ab826
+[I 2026-01-16T01:05:19.962] Request completed status_code=200 path= logger=root request_id=c22f8d76-1252-4032-9bb9-d9d20f8ab826
+[I 2026-01-16T01:05:19.964] 127.0.0.1 - - [16/Jan/2026 01:05:19] "POST / HTTP/1.1" 200 -
+ 38% 76/198 [04:51<07:21,  3.62s/it][I 2026-01-16T01:05:20.592] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5933d733-5663-49f8-8379-a4a9cec7f4a9
+[W 2026-01-16T01:05:20.592] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5933d733-5663-49f8-8379-a4a9cec7f4a9
+[I 2026-01-16T01:05:21.419] Cached successful response cache_key=64704e19... logger=CachingInterceptor request_id=b003e587-2952-4e21-bb67-eae6ca61373c
+[I 2026-01-16T01:05:21.419] Request completed status_code=200 path= logger=root request_id=b003e587-2952-4e21-bb67-eae6ca61373c
+[I 2026-01-16T01:05:21.420] 127.0.0.1 - - [16/Jan/2026 01:05:21] "POST / HTTP/1.1" 200 -
+ 39% 77/198 [04:52<05:49,  2.89s/it][I 2026-01-16T01:05:21.783] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=28f101de-3a8b-4559-9461-06de46f0507e
+[W 2026-01-16T01:05:21.783] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=28f101de-3a8b-4559-9461-06de46f0507e
+[I 2026-01-16T01:05:22.585] Cached successful response cache_key=06cae08e... logger=CachingInterceptor request_id=6196594d-4603-42a9-b3e9-77408ea1c8fa
+[I 2026-01-16T01:05:22.585] Request completed status_code=200 path= logger=root request_id=6196594d-4603-42a9-b3e9-77408ea1c8fa
+[I 2026-01-16T01:05:22.600] 127.0.0.1 - - [16/Jan/2026 01:05:22] "POST / HTTP/1.1" 200 -
+ 39% 78/198 [04:53<04:48,  2.40s/it][I 2026-01-16T01:05:23.050] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=512d0a4a-8717-4c54-a8aa-de2d42adcf7b
+[W 2026-01-16T01:05:23.051] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=512d0a4a-8717-4c54-a8aa-de2d42adcf7b
+[I 2026-01-16T01:05:23.766] Cached successful response cache_key=49e10849... logger=CachingInterceptor request_id=831b2b5e-5022-4e42-b5d7-aef3760fdc62
+[I 2026-01-16T01:05:23.766] Request completed status_code=200 path= logger=root request_id=831b2b5e-5022-4e42-b5d7-aef3760fdc62
+[I 2026-01-16T01:05:23.800] 127.0.0.1 - - [16/Jan/2026 01:05:23] "POST / HTTP/1.1" 200 -
+ 40% 79/198 [04:54<04:03,  2.04s/it][I 2026-01-16T01:05:24.256] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=07e6f2ee-02d3-4bc4-aeef-c51626082e5c
+[W 2026-01-16T01:05:24.256] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=07e6f2ee-02d3-4bc4-aeef-c51626082e5c
+[I 2026-01-16T01:05:26.767] Cached successful response cache_key=c909baf9... logger=CachingInterceptor request_id=28f101de-3a8b-4559-9461-06de46f0507e
+[I 2026-01-16T01:05:26.767] Request completed status_code=200 path= logger=root request_id=28f101de-3a8b-4559-9461-06de46f0507e
+[I 2026-01-16T01:05:26.769] 127.0.0.1 - - [16/Jan/2026 01:05:26] "POST / HTTP/1.1" 200 -
+ 40% 80/198 [04:57<04:32,  2.31s/it][I 2026-01-16T01:05:27.176] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=68935315-d6b5-45a3-9e05-22b9a6f6df9c
+[W 2026-01-16T01:05:27.176] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=68935315-d6b5-45a3-9e05-22b9a6f6df9c
+[I 2026-01-16T01:05:28.806] Cached successful response cache_key=84537003... logger=CachingInterceptor request_id=5933d733-5663-49f8-8379-a4a9cec7f4a9
+[I 2026-01-16T01:05:28.806] Request completed status_code=200 path= logger=root request_id=5933d733-5663-49f8-8379-a4a9cec7f4a9
+[I 2026-01-16T01:05:28.807] 127.0.0.1 - - [16/Jan/2026 01:05:28] "POST / HTTP/1.1" 200 -
+ 41% 81/198 [04:59<04:17,  2.20s/it][I 2026-01-16T01:05:29.127] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a0286cf1-4d76-4339-8f06-cabea42b081f
+[W 2026-01-16T01:05:29.128] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a0286cf1-4d76-4339-8f06-cabea42b081f
+[I 2026-01-16T01:05:29.426] Cached successful response cache_key=d7048268... logger=CachingInterceptor request_id=512d0a4a-8717-4c54-a8aa-de2d42adcf7b
+[I 2026-01-16T01:05:29.426] Request completed status_code=200 path= logger=root request_id=512d0a4a-8717-4c54-a8aa-de2d42adcf7b
+[I 2026-01-16T01:05:29.427] 127.0.0.1 - - [16/Jan/2026 01:05:29] "POST / HTTP/1.1" 200 -
+ 41% 82/198 [05:00<03:25,  1.77s/it][I 2026-01-16T01:05:29.887] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=96589141-6eb6-47c4-a500-6ff9763a9f2a
+[W 2026-01-16T01:05:29.887] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=96589141-6eb6-47c4-a500-6ff9763a9f2a
+[I 2026-01-16T01:05:33.305] Cached successful response cache_key=78499622... logger=CachingInterceptor request_id=a0286cf1-4d76-4339-8f06-cabea42b081f
+[I 2026-01-16T01:05:33.305] Request completed status_code=200 path= logger=root request_id=a0286cf1-4d76-4339-8f06-cabea42b081f
+[I 2026-01-16T01:05:33.306] 127.0.0.1 - - [16/Jan/2026 01:05:33] "POST / HTTP/1.1" 200 -
+ 42% 83/198 [05:04<04:29,  2.35s/it][I 2026-01-16T01:05:33.578] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9b41b1f9-3334-4d4f-8779-968c56371028
+[W 2026-01-16T01:05:33.578] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9b41b1f9-3334-4d4f-8779-968c56371028
+[I 2026-01-16T01:05:38.576] Cached successful response cache_key=9e2bbe43... logger=CachingInterceptor request_id=96589141-6eb6-47c4-a500-6ff9763a9f2a
+[I 2026-01-16T01:05:38.576] Request completed status_code=200 path= logger=root request_id=96589141-6eb6-47c4-a500-6ff9763a9f2a
+[I 2026-01-16T01:05:38.577] 127.0.0.1 - - [16/Jan/2026 01:05:38] "POST / HTTP/1.1" 200 -
+ 42% 84/198 [05:09<06:09,  3.24s/it][I 2026-01-16T01:05:38.921] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b6e37dbe-24ce-478c-b0f3-2a3d17b60f4c
+[W 2026-01-16T01:05:38.921] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b6e37dbe-24ce-478c-b0f3-2a3d17b60f4c
+[I 2026-01-16T01:05:53.988] Cached successful response cache_key=f6819349... logger=CachingInterceptor request_id=9b41b1f9-3334-4d4f-8779-968c56371028
+[I 2026-01-16T01:05:53.988] Request completed status_code=200 path= logger=root request_id=9b41b1f9-3334-4d4f-8779-968c56371028
+[I 2026-01-16T01:05:53.989] 127.0.0.1 - - [16/Jan/2026 01:05:53] "POST / HTTP/1.1" 200 -
+ 43% 85/198 [05:24<12:55,  6.86s/it][I 2026-01-16T01:05:54.216] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=43da6884-1a35-43a0-a08a-ebee3d723c39
+[W 2026-01-16T01:05:54.216] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=43da6884-1a35-43a0-a08a-ebee3d723c39
+[I 2026-01-16T01:06:04.148] Cached successful response cache_key=4d0ee5c0... logger=CachingInterceptor request_id=68935315-d6b5-45a3-9e05-22b9a6f6df9c
+[I 2026-01-16T01:06:04.148] Request completed status_code=200 path= logger=root request_id=68935315-d6b5-45a3-9e05-22b9a6f6df9c
+[I 2026-01-16T01:06:04.149] 127.0.0.1 - - [16/Jan/2026 01:06:04] "POST / HTTP/1.1" 200 -
+ 43% 86/198 [05:34<14:43,  7.89s/it][I 2026-01-16T01:06:04.516] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=35f033a3-3e35-4e52-9ccd-c6cd4df251e7
+[W 2026-01-16T01:06:04.517] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=35f033a3-3e35-4e52-9ccd-c6cd4df251e7
+[I 2026-01-16T01:06:05.266] Cached successful response cache_key=6975ad9c... logger=CachingInterceptor request_id=07e6f2ee-02d3-4bc4-aeef-c51626082e5c
+[I 2026-01-16T01:06:05.266] Request completed status_code=200 path= logger=root request_id=07e6f2ee-02d3-4bc4-aeef-c51626082e5c
+[I 2026-01-16T01:06:05.267] 127.0.0.1 - - [16/Jan/2026 01:06:05] "POST / HTTP/1.1" 200 -
+ 44% 87/198 [05:36<10:50,  5.86s/it][I 2026-01-16T01:06:05.640] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=04a1fed0-16d6-4129-83ef-6a9c3168d79b
+[W 2026-01-16T01:06:05.641] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=04a1fed0-16d6-4129-83ef-6a9c3168d79b
+[I 2026-01-16T01:06:05.739] Cached successful response cache_key=cea978ca... logger=CachingInterceptor request_id=b6e37dbe-24ce-478c-b0f3-2a3d17b60f4c
+[I 2026-01-16T01:06:05.739] Request completed status_code=200 path= logger=root request_id=b6e37dbe-24ce-478c-b0f3-2a3d17b60f4c
+[I 2026-01-16T01:06:05.740] 127.0.0.1 - - [16/Jan/2026 01:06:05] "POST / HTTP/1.1" 200 -
+ 44% 88/198 [05:36<07:53,  4.31s/it][I 2026-01-16T01:06:06.324] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d3101eb8-81c4-42cb-b307-7e319217745b
+[W 2026-01-16T01:06:06.325] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d3101eb8-81c4-42cb-b307-7e319217745b
+[I 2026-01-16T01:06:06.763] Cached successful response cache_key=05f110d9... logger=CachingInterceptor request_id=43da6884-1a35-43a0-a08a-ebee3d723c39
+[I 2026-01-16T01:06:06.763] Request completed status_code=200 path= logger=root request_id=43da6884-1a35-43a0-a08a-ebee3d723c39
+[I 2026-01-16T01:06:06.764] 127.0.0.1 - - [16/Jan/2026 01:06:06] "POST / HTTP/1.1" 200 -
+ 45% 89/198 [05:37<05:59,  3.30s/it][I 2026-01-16T01:06:07.259] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=89c4fccb-e33b-44dc-ad9f-161361bde85f
+[W 2026-01-16T01:06:07.260] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=89c4fccb-e33b-44dc-ad9f-161361bde85f
+[I 2026-01-16T01:06:08.964] Cached successful response cache_key=a9840045... logger=CachingInterceptor request_id=35f033a3-3e35-4e52-9ccd-c6cd4df251e7
+[I 2026-01-16T01:06:08.964] Request completed status_code=200 path= logger=root request_id=35f033a3-3e35-4e52-9ccd-c6cd4df251e7
+[I 2026-01-16T01:06:08.965] 127.0.0.1 - - [16/Jan/2026 01:06:08] "POST / HTTP/1.1" 200 -
+ 45% 90/198 [05:39<05:16,  2.93s/it][I 2026-01-16T01:06:09.322] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=55016dc2-d8a5-4692-ad0f-c9310c7caa02
+[W 2026-01-16T01:06:09.322] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=55016dc2-d8a5-4692-ad0f-c9310c7caa02
+[I 2026-01-16T01:06:09.875] Cached successful response cache_key=75cc8291... logger=CachingInterceptor request_id=04a1fed0-16d6-4129-83ef-6a9c3168d79b
+[I 2026-01-16T01:06:09.875] Request completed status_code=200 path= logger=root request_id=04a1fed0-16d6-4129-83ef-6a9c3168d79b
+[I 2026-01-16T01:06:09.876] 127.0.0.1 - - [16/Jan/2026 01:06:09] "POST / HTTP/1.1" 200 -
+ 46% 91/198 [05:40<04:09,  2.33s/it][I 2026-01-16T01:06:10.273] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d6878250-3108-4922-8098-aef6dc5794cb
+[W 2026-01-16T01:06:10.273] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d6878250-3108-4922-8098-aef6dc5794cb
+[I 2026-01-16T01:06:10.495] Cached successful response cache_key=caafe48c... logger=CachingInterceptor request_id=d3101eb8-81c4-42cb-b307-7e319217745b
+[I 2026-01-16T01:06:10.495] Request completed status_code=200 path= logger=root request_id=d3101eb8-81c4-42cb-b307-7e319217745b
+[I 2026-01-16T01:06:10.496] 127.0.0.1 - - [16/Jan/2026 01:06:10] "POST / HTTP/1.1" 200 -
+ 46% 92/198 [05:41<03:12,  1.81s/it][I 2026-01-16T01:06:10.869] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ed96feac-7bc3-4d95-a049-11e642f91123
+[W 2026-01-16T01:06:10.869] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ed96feac-7bc3-4d95-a049-11e642f91123
+[I 2026-01-16T01:06:11.909] Cached successful response cache_key=1f25f01f... logger=CachingInterceptor request_id=89c4fccb-e33b-44dc-ad9f-161361bde85f
+[I 2026-01-16T01:06:11.909] Request completed status_code=200 path= logger=root request_id=89c4fccb-e33b-44dc-ad9f-161361bde85f
+[I 2026-01-16T01:06:11.910] 127.0.0.1 - - [16/Jan/2026 01:06:11] "POST / HTTP/1.1" 200 -
+ 47% 93/198 [05:42<02:58,  1.70s/it][I 2026-01-16T01:06:12.295] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=564d9f0e-a89c-4f53-91d3-192e866e483e
+[W 2026-01-16T01:06:12.296] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=564d9f0e-a89c-4f53-91d3-192e866e483e
+[I 2026-01-16T01:06:15.311] Cached successful response cache_key=c21e85ef... logger=CachingInterceptor request_id=d6878250-3108-4922-8098-aef6dc5794cb
+[I 2026-01-16T01:06:15.311] Request completed status_code=200 path= logger=root request_id=d6878250-3108-4922-8098-aef6dc5794cb
+[I 2026-01-16T01:06:15.312] 127.0.0.1 - - [16/Jan/2026 01:06:15] "POST / HTTP/1.1" 200 -
+ 47% 94/198 [05:46<03:52,  2.23s/it][I 2026-01-16T01:06:15.783] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c603034e-9169-434e-a3d8-b98618d1ca3d
+[W 2026-01-16T01:06:15.783] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c603034e-9169-434e-a3d8-b98618d1ca3d
+[I 2026-01-16T01:06:16.719] Cached successful response cache_key=d1943d0e... logger=CachingInterceptor request_id=564d9f0e-a89c-4f53-91d3-192e866e483e
+[I 2026-01-16T01:06:16.719] Request completed status_code=200 path= logger=root request_id=564d9f0e-a89c-4f53-91d3-192e866e483e
+[I 2026-01-16T01:06:16.720] 127.0.0.1 - - [16/Jan/2026 01:06:16] "POST / HTTP/1.1" 200 -
+ 48% 95/198 [05:47<03:32,  2.06s/it][I 2026-01-16T01:06:17.434] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b5c5a2f4-cce2-4f7b-b07f-23d6b0adbdb0
+[W 2026-01-16T01:06:17.435] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b5c5a2f4-cce2-4f7b-b07f-23d6b0adbdb0
+[I 2026-01-16T01:06:19.377] Cached successful response cache_key=cc010b43... logger=CachingInterceptor request_id=ed96feac-7bc3-4d95-a049-11e642f91123
+[I 2026-01-16T01:06:19.377] Request completed status_code=200 path= logger=root request_id=ed96feac-7bc3-4d95-a049-11e642f91123
+[I 2026-01-16T01:06:19.378] 127.0.0.1 - - [16/Jan/2026 01:06:19] "POST / HTTP/1.1" 200 -
+ 48% 96/198 [05:50<03:38,  2.15s/it][I 2026-01-16T01:06:19.783] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=945b2cbc-4043-4016-bc5c-81a2d8c9550e
+[W 2026-01-16T01:06:19.784] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=945b2cbc-4043-4016-bc5c-81a2d8c9550e
+[I 2026-01-16T01:06:19.908]  avg_prompt_tokens=284.4 avg_total_tokens=1209.27 avg_completion_tokens=924.87 avg_latency_ms=5283.09 max_prompt_tokens=939 max_total_tokens=2596 max_completion_tokens=2048 max_latency_ms=29224.17 count=100 successful_count=100 tool_calls_count=0 function_calls_count=0 finish_reason={'stop': 71, 'length': 29} stop_reason={} status_codes={200: 100} inference_time=334.40964913368225 run_id=0 last_request_time=1768525579.908473 inference_run_times={0: {'run_start': 1768525193.6591904, 'first_request_time': 1768525245.498824, 'last_request_time': 1768525579.908473, 'inference_time': 334.40964913368225}} logger=ResponseStatsInterceptor request_id=b5c5a2f4-cce2-4f7b-b07f-23d6b0adbdb0
+[I 2026-01-16T01:06:20.769] Cached successful response cache_key=77f93e65... logger=CachingInterceptor request_id=c603034e-9169-434e-a3d8-b98618d1ca3d
+[I 2026-01-16T01:06:20.769] Request completed status_code=200 path= logger=root request_id=c603034e-9169-434e-a3d8-b98618d1ca3d
+[I 2026-01-16T01:06:20.770] 127.0.0.1 - - [16/Jan/2026 01:06:20] "POST / HTTP/1.1" 200 -
+ 49% 97/198 [05:51<03:15,  1.93s/it][I 2026-01-16T01:06:21.225] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=fd6d8de8-88f9-4e64-b4f2-b1354a12d8b9
+[W 2026-01-16T01:06:21.226] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=fd6d8de8-88f9-4e64-b4f2-b1354a12d8b9
+[I 2026-01-16T01:06:21.857] Cached successful response cache_key=0afbed3c... logger=CachingInterceptor request_id=b5c5a2f4-cce2-4f7b-b07f-23d6b0adbdb0
+[I 2026-01-16T01:06:21.857] Request completed status_code=200 path= logger=root request_id=b5c5a2f4-cce2-4f7b-b07f-23d6b0adbdb0
+[I 2026-01-16T01:06:21.858] 127.0.0.1 - - [16/Jan/2026 01:06:21] "POST / HTTP/1.1" 200 -
+ 49% 98/198 [05:52<02:46,  1.66s/it][I 2026-01-16T01:06:22.246] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f47b649f-dd08-4c0f-a464-fca976e90505
+[W 2026-01-16T01:06:22.246] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f47b649f-dd08-4c0f-a464-fca976e90505
+[I 2026-01-16T01:06:23.014] Cached successful response cache_key=d37a2d93... logger=CachingInterceptor request_id=55016dc2-d8a5-4692-ad0f-c9310c7caa02
+[I 2026-01-16T01:06:23.014] Request completed status_code=200 path= logger=root request_id=55016dc2-d8a5-4692-ad0f-c9310c7caa02
+[I 2026-01-16T01:06:23.016] 127.0.0.1 - - [16/Jan/2026 01:06:23] "POST / HTTP/1.1" 200 -
+ 50% 99/198 [05:53<02:29,  1.52s/it][I 2026-01-16T01:06:23.421] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=76c8b18b-59b8-47a4-933d-4be494eded64
+[W 2026-01-16T01:06:23.422] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=76c8b18b-59b8-47a4-933d-4be494eded64
+[I 2026-01-16T01:06:25.984] Cached successful response cache_key=c8c220d3... logger=CachingInterceptor request_id=945b2cbc-4043-4016-bc5c-81a2d8c9550e
+[I 2026-01-16T01:06:25.984] Request completed status_code=200 path= logger=root request_id=945b2cbc-4043-4016-bc5c-81a2d8c9550e
+[I 2026-01-16T01:06:25.985] 127.0.0.1 - - [16/Jan/2026 01:06:25] "POST / HTTP/1.1" 200 -
+ 51% 100/198 [05:57<03:15,  2.00s/it][I 2026-01-16T01:06:26.550] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ee77194f-5d36-4aa6-b54c-51a2a005e39d
+[W 2026-01-16T01:06:26.550] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ee77194f-5d36-4aa6-b54c-51a2a005e39d
+[I 2026-01-16T01:06:28.138] Cached successful response cache_key=7961d4e1... logger=CachingInterceptor request_id=fd6d8de8-88f9-4e64-b4f2-b1354a12d8b9
+[I 2026-01-16T01:06:28.138] Request completed status_code=200 path= logger=root request_id=fd6d8de8-88f9-4e64-b4f2-b1354a12d8b9
+[I 2026-01-16T01:06:28.139] 127.0.0.1 - - [16/Jan/2026 01:06:28] "POST / HTTP/1.1" 200 -
+ 51% 101/198 [05:59<03:14,  2.00s/it][I 2026-01-16T01:06:28.558] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=43b5f993-e5d6-4b50-a25e-9fb100221f13
+[W 2026-01-16T01:06:28.558] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=43b5f993-e5d6-4b50-a25e-9fb100221f13
+[I 2026-01-16T01:06:29.127] Cached successful response cache_key=d5ced8b8... logger=CachingInterceptor request_id=76c8b18b-59b8-47a4-933d-4be494eded64
+[I 2026-01-16T01:06:29.127] Request completed status_code=200 path= logger=root request_id=76c8b18b-59b8-47a4-933d-4be494eded64
+[I 2026-01-16T01:06:29.128] 127.0.0.1 - - [16/Jan/2026 01:06:29] "POST / HTTP/1.1" 200 -
+ 52% 102/198 [06:00<02:47,  1.74s/it][I 2026-01-16T01:06:29.686] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9e9f976e-a5c4-4d89-8c5c-2b40a93acd6c
+[W 2026-01-16T01:06:29.687] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9e9f976e-a5c4-4d89-8c5c-2b40a93acd6c
+[I 2026-01-16T01:06:31.208] Cached successful response cache_key=713dc3c3... logger=CachingInterceptor request_id=ee77194f-5d36-4aa6-b54c-51a2a005e39d
+[I 2026-01-16T01:06:31.208] Request completed status_code=200 path= logger=root request_id=ee77194f-5d36-4aa6-b54c-51a2a005e39d
+[I 2026-01-16T01:06:31.210] 127.0.0.1 - - [16/Jan/2026 01:06:31] "POST / HTTP/1.1" 200 -
+ 52% 103/198 [06:02<03:04,  1.94s/it][I 2026-01-16T01:06:32.101] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=dd83da59-3467-481b-9b15-d172a289e3bd
+[W 2026-01-16T01:06:32.101] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=dd83da59-3467-481b-9b15-d172a289e3bd
+[I 2026-01-16T01:06:34.074] Cached successful response cache_key=de3fa6bc... logger=CachingInterceptor request_id=43b5f993-e5d6-4b50-a25e-9fb100221f13
+[I 2026-01-16T01:06:34.074] Request completed status_code=200 path= logger=root request_id=43b5f993-e5d6-4b50-a25e-9fb100221f13
+[I 2026-01-16T01:06:34.075] 127.0.0.1 - - [16/Jan/2026 01:06:34] "POST / HTTP/1.1" 200 -
+ 53% 104/198 [06:04<03:15,  2.08s/it][I 2026-01-16T01:06:34.504] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7a189abd-415a-45ab-bf57-e0b3be40a618
+[W 2026-01-16T01:06:34.504] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7a189abd-415a-45ab-bf57-e0b3be40a618
+[I 2026-01-16T01:06:35.285] Cached successful response cache_key=bf148b7c... logger=CachingInterceptor request_id=f47b649f-dd08-4c0f-a464-fca976e90505
+[I 2026-01-16T01:06:35.285] Request completed status_code=200 path= logger=root request_id=f47b649f-dd08-4c0f-a464-fca976e90505
+[I 2026-01-16T01:06:35.286] 127.0.0.1 - - [16/Jan/2026 01:06:35] "POST / HTTP/1.1" 200 -
+ 53% 105/198 [06:06<02:49,  1.82s/it][I 2026-01-16T01:06:35.710] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=fc492a7c-3b62-42b1-acaf-546e3f380e24
+[W 2026-01-16T01:06:35.710] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=fc492a7c-3b62-42b1-acaf-546e3f380e24
+[I 2026-01-16T01:06:36.143] Cached successful response cache_key=aaa0918d... logger=CachingInterceptor request_id=9e9f976e-a5c4-4d89-8c5c-2b40a93acd6c
+[I 2026-01-16T01:06:36.144] Request completed status_code=200 path= logger=root request_id=9e9f976e-a5c4-4d89-8c5c-2b40a93acd6c
+[I 2026-01-16T01:06:36.145] 127.0.0.1 - - [16/Jan/2026 01:06:36] "POST / HTTP/1.1" 200 -
+ 54% 106/198 [06:07<02:23,  1.56s/it][I 2026-01-16T01:06:36.670] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9ff42c39-84ff-4993-9a8b-64052f1018c2
+[W 2026-01-16T01:06:36.670] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9ff42c39-84ff-4993-9a8b-64052f1018c2
+[I 2026-01-16T01:06:39.079] Cached successful response cache_key=3c991d69... logger=CachingInterceptor request_id=7a189abd-415a-45ab-bf57-e0b3be40a618
+[I 2026-01-16T01:06:39.080] Request completed status_code=200 path= logger=root request_id=7a189abd-415a-45ab-bf57-e0b3be40a618
+[I 2026-01-16T01:06:39.081] 127.0.0.1 - - [16/Jan/2026 01:06:39] "POST / HTTP/1.1" 200 -
+ 54% 107/198 [06:10<03:01,  1.99s/it][I 2026-01-16T01:06:39.661] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0b985492-3c66-4f80-8236-6b72928ce418
+[W 2026-01-16T01:06:39.661] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0b985492-3c66-4f80-8236-6b72928ce418
+[I 2026-01-16T01:06:44.701] Cached successful response cache_key=6f2bb76f... logger=CachingInterceptor request_id=9ff42c39-84ff-4993-9a8b-64052f1018c2
+[I 2026-01-16T01:06:44.701] Request completed status_code=200 path= logger=root request_id=9ff42c39-84ff-4993-9a8b-64052f1018c2
+[I 2026-01-16T01:06:44.702] 127.0.0.1 - - [16/Jan/2026 01:06:44] "POST / HTTP/1.1" 200 -
+ 55% 108/198 [06:15<04:39,  3.10s/it][I 2026-01-16T01:06:45.384] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=76359380-cad9-45e5-b566-b94e84927daf
+[W 2026-01-16T01:06:45.384] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=76359380-cad9-45e5-b566-b94e84927daf
+[I 2026-01-16T01:06:46.859] Cached successful response cache_key=26506ca8... logger=CachingInterceptor request_id=fc492a7c-3b62-42b1-acaf-546e3f380e24
+[I 2026-01-16T01:06:46.860] Request completed status_code=200 path= logger=root request_id=fc492a7c-3b62-42b1-acaf-546e3f380e24
+[I 2026-01-16T01:06:46.861] 127.0.0.1 - - [16/Jan/2026 01:06:46] "POST / HTTP/1.1" 200 -
+ 55% 109/198 [06:18<04:13,  2.85s/it][I 2026-01-16T01:06:47.617] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a13b08ce-997a-42f2-a249-9e9907d7f926
+[W 2026-01-16T01:06:47.617] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a13b08ce-997a-42f2-a249-9e9907d7f926
+[I 2026-01-16T01:06:47.646] Cached successful response cache_key=4c5ecee6... logger=CachingInterceptor request_id=dd83da59-3467-481b-9b15-d172a289e3bd
+[I 2026-01-16T01:06:47.646] Request completed status_code=200 path= logger=root request_id=dd83da59-3467-481b-9b15-d172a289e3bd
+[I 2026-01-16T01:06:47.647] 127.0.0.1 - - [16/Jan/2026 01:06:47] "POST / HTTP/1.1" 200 -
+ 56% 110/198 [06:18<03:07,  2.13s/it][I 2026-01-16T01:06:48.077] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bf914fb1-e927-4662-bb10-3d70391863d6
+[W 2026-01-16T01:06:48.078] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=bf914fb1-e927-4662-bb10-3d70391863d6
+[I 2026-01-16T01:06:49.025] Cached successful response cache_key=c35e3854... logger=CachingInterceptor request_id=0b985492-3c66-4f80-8236-6b72928ce418
+[I 2026-01-16T01:06:49.025] Request completed status_code=200 path= logger=root request_id=0b985492-3c66-4f80-8236-6b72928ce418
+[I 2026-01-16T01:06:49.026] 127.0.0.1 - - [16/Jan/2026 01:06:49] "POST / HTTP/1.1" 200 -
+ 56% 111/198 [06:20<02:52,  1.99s/it][I 2026-01-16T01:06:49.721] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3d384218-3556-403e-b640-a6d53c5cccad
+[W 2026-01-16T01:06:49.722] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3d384218-3556-403e-b640-a6d53c5cccad
+[I 2026-01-16T01:06:50.951] Cached successful response cache_key=e99ad3bc... logger=CachingInterceptor request_id=76359380-cad9-45e5-b566-b94e84927daf
+[I 2026-01-16T01:06:50.951] Request completed status_code=200 path= logger=root request_id=76359380-cad9-45e5-b566-b94e84927daf
+[I 2026-01-16T01:06:50.953] 127.0.0.1 - - [16/Jan/2026 01:06:50] "POST / HTTP/1.1" 200 -
+ 57% 112/198 [06:21<02:38,  1.84s/it][I 2026-01-16T01:06:51.219] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9eac6f0f-2e94-453d-a672-d1125281c67c
+[W 2026-01-16T01:06:51.219] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9eac6f0f-2e94-453d-a672-d1125281c67c
+[I 2026-01-16T01:06:55.049] Cached successful response cache_key=185a70ec... logger=CachingInterceptor request_id=3d384218-3556-403e-b640-a6d53c5cccad
+[I 2026-01-16T01:06:55.050] Request completed status_code=200 path= logger=root request_id=3d384218-3556-403e-b640-a6d53c5cccad
+[I 2026-01-16T01:06:55.051] 127.0.0.1 - - [16/Jan/2026 01:06:55] "POST / HTTP/1.1" 200 -
+ 57% 113/198 [06:26<03:39,  2.58s/it][I 2026-01-16T01:06:55.531] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=16eae491-d0dc-4a64-80c4-0a4e2ded13f3
+[W 2026-01-16T01:06:55.531] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=16eae491-d0dc-4a64-80c4-0a4e2ded13f3
+[I 2026-01-16T01:07:01.591] Cached successful response cache_key=8712b4b6... logger=CachingInterceptor request_id=a13b08ce-997a-42f2-a249-9e9907d7f926
+[I 2026-01-16T01:07:01.591] Request completed status_code=200 path= logger=root request_id=a13b08ce-997a-42f2-a249-9e9907d7f926
+[I 2026-01-16T01:07:01.592] 127.0.0.1 - - [16/Jan/2026 01:07:01] "POST / HTTP/1.1" 200 -
+ 58% 114/198 [06:32<05:09,  3.68s/it][I 2026-01-16T01:07:01.781] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=357b2cf0-8393-4349-b662-f059ecaaa339
+[W 2026-01-16T01:07:01.781] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=357b2cf0-8393-4349-b662-f059ecaaa339
+[I 2026-01-16T01:07:05.405] Cached successful response cache_key=461ba477... logger=CachingInterceptor request_id=16eae491-d0dc-4a64-80c4-0a4e2ded13f3
+[I 2026-01-16T01:07:05.405] Request completed status_code=200 path= logger=root request_id=16eae491-d0dc-4a64-80c4-0a4e2ded13f3
+[I 2026-01-16T01:07:05.406] 127.0.0.1 - - [16/Jan/2026 01:07:05] "POST / HTTP/1.1" 200 -
+ 58% 115/198 [06:36<05:14,  3.78s/it][I 2026-01-16T01:07:05.804] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=4312e33a-4df7-454b-8728-8ff2eeef1e4c
+[W 2026-01-16T01:07:05.804] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=4312e33a-4df7-454b-8728-8ff2eeef1e4c
+[I 2026-01-16T01:07:06.833] Cached successful response cache_key=5afcf850... logger=CachingInterceptor request_id=bf914fb1-e927-4662-bb10-3d70391863d6
+[I 2026-01-16T01:07:06.834] Request completed status_code=200 path= logger=root request_id=bf914fb1-e927-4662-bb10-3d70391863d6
+[I 2026-01-16T01:07:06.835] 127.0.0.1 - - [16/Jan/2026 01:07:06] "POST / HTTP/1.1" 200 -
+ 59% 116/198 [06:37<04:18,  3.16s/it][I 2026-01-16T01:07:07.492] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a853ca0c-370e-4d4f-8d83-b7d6a94a7ca4
+[W 2026-01-16T01:07:07.492] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a853ca0c-370e-4d4f-8d83-b7d6a94a7ca4
+[I 2026-01-16T01:07:07.737] Cached successful response cache_key=eb63c72e... logger=CachingInterceptor request_id=9eac6f0f-2e94-453d-a672-d1125281c67c
+[I 2026-01-16T01:07:07.737] Request completed status_code=200 path= logger=root request_id=9eac6f0f-2e94-453d-a672-d1125281c67c
+[I 2026-01-16T01:07:07.738] 127.0.0.1 - - [16/Jan/2026 01:07:07] "POST / HTTP/1.1" 200 -
+ 59% 117/198 [06:38<03:14,  2.40s/it][I 2026-01-16T01:07:08.129] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9a0b0bff-06f3-4c9b-b446-6c7096237149
+[W 2026-01-16T01:07:08.129] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9a0b0bff-06f3-4c9b-b446-6c7096237149
+[I 2026-01-16T01:07:15.543] Cached successful response cache_key=05194a48... logger=CachingInterceptor request_id=a853ca0c-370e-4d4f-8d83-b7d6a94a7ca4
+[I 2026-01-16T01:07:15.543] Request completed status_code=200 path= logger=root request_id=a853ca0c-370e-4d4f-8d83-b7d6a94a7ca4
+[I 2026-01-16T01:07:15.545] 127.0.0.1 - - [16/Jan/2026 01:07:15] "POST / HTTP/1.1" 200 -
+ 60% 118/198 [06:46<05:20,  4.01s/it][I 2026-01-16T01:07:15.899] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=1c33a3ff-e53a-4c59-943c-6b81a21e03e4
+[W 2026-01-16T01:07:15.900] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=1c33a3ff-e53a-4c59-943c-6b81a21e03e4
+[I 2026-01-16T01:07:16.867] Cached successful response cache_key=bf38e5ff... logger=CachingInterceptor request_id=9a0b0bff-06f3-4c9b-b446-6c7096237149
+[I 2026-01-16T01:07:16.867] Request completed status_code=200 path= logger=root request_id=9a0b0bff-06f3-4c9b-b446-6c7096237149
+[I 2026-01-16T01:07:16.868] 127.0.0.1 - - [16/Jan/2026 01:07:16] "POST / HTTP/1.1" 200 -
+ 60% 119/198 [06:47<04:11,  3.18s/it][I 2026-01-16T01:07:17.154] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=48607349-659d-4e7c-a1d7-1bec33c150fe
+[W 2026-01-16T01:07:17.154] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=48607349-659d-4e7c-a1d7-1bec33c150fe
+[I 2026-01-16T01:07:17.736] Cached successful response cache_key=8b43686f... logger=CachingInterceptor request_id=357b2cf0-8393-4349-b662-f059ecaaa339
+[I 2026-01-16T01:07:17.737] Request completed status_code=200 path= logger=root request_id=357b2cf0-8393-4349-b662-f059ecaaa339
+[I 2026-01-16T01:07:17.738] 127.0.0.1 - - [16/Jan/2026 01:07:17] "POST / HTTP/1.1" 200 -
+ 61% 120/198 [06:48<03:15,  2.51s/it][I 2026-01-16T01:07:18.084] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2ea3246d-941d-4341-bd9f-c190242cd544
+[W 2026-01-16T01:07:18.084] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2ea3246d-941d-4341-bd9f-c190242cd544
+[I 2026-01-16T01:07:18.636] Cached successful response cache_key=e04d8e04... logger=CachingInterceptor request_id=4312e33a-4df7-454b-8728-8ff2eeef1e4c
+[I 2026-01-16T01:07:18.637] Request completed status_code=200 path= logger=root request_id=4312e33a-4df7-454b-8728-8ff2eeef1e4c
+[I 2026-01-16T01:07:18.638] 127.0.0.1 - - [16/Jan/2026 01:07:18] "POST / HTTP/1.1" 200 -
+ 61% 121/198 [06:49<02:36,  2.03s/it][I 2026-01-16T01:07:18.990] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9901c4e1-0ead-4e59-b38a-bd74a1f60275
+[W 2026-01-16T01:07:18.991] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9901c4e1-0ead-4e59-b38a-bd74a1f60275
+[I 2026-01-16T01:07:21.559] Cached successful response cache_key=e26babfa... logger=CachingInterceptor request_id=1c33a3ff-e53a-4c59-943c-6b81a21e03e4
+[I 2026-01-16T01:07:21.559] Request completed status_code=200 path= logger=root request_id=1c33a3ff-e53a-4c59-943c-6b81a21e03e4
+[I 2026-01-16T01:07:21.560] 127.0.0.1 - - [16/Jan/2026 01:07:21] "POST / HTTP/1.1" 200 -
+ 62% 122/198 [06:52<02:53,  2.28s/it][I 2026-01-16T01:07:21.873] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7f6207c8-e9a9-4af0-8a4b-88afe88e766f
+[W 2026-01-16T01:07:21.873] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7f6207c8-e9a9-4af0-8a4b-88afe88e766f
+[I 2026-01-16T01:07:22.373] Cached successful response cache_key=40f703c3... logger=CachingInterceptor request_id=2ea3246d-941d-4341-bd9f-c190242cd544
+[I 2026-01-16T01:07:22.374] Request completed status_code=200 path= logger=root request_id=2ea3246d-941d-4341-bd9f-c190242cd544
+[I 2026-01-16T01:07:22.375] 127.0.0.1 - - [16/Jan/2026 01:07:22] "POST / HTTP/1.1" 200 -
+ 62% 123/198 [06:53<02:18,  1.85s/it][I 2026-01-16T01:07:22.696] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8d9ca4fb-d4d3-45fe-bcff-62c17bad8fbd
+[W 2026-01-16T01:07:22.697] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8d9ca4fb-d4d3-45fe-bcff-62c17bad8fbd
+[I 2026-01-16T01:07:23.566] Cached successful response cache_key=f32e6629... logger=CachingInterceptor request_id=9901c4e1-0ead-4e59-b38a-bd74a1f60275
+[I 2026-01-16T01:07:23.566] Request completed status_code=200 path= logger=root request_id=9901c4e1-0ead-4e59-b38a-bd74a1f60275
+[I 2026-01-16T01:07:23.567] 127.0.0.1 - - [16/Jan/2026 01:07:23] "POST / HTTP/1.1" 200 -
+ 63% 124/198 [06:54<02:02,  1.66s/it][I 2026-01-16T01:07:23.924] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=513506c6-8ed3-40ee-bfbe-a5ff21f2d9d3
+[W 2026-01-16T01:07:23.924] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=513506c6-8ed3-40ee-bfbe-a5ff21f2d9d3
+[I 2026-01-16T01:07:27.584] Cached successful response cache_key=2e2bbdc4... logger=CachingInterceptor request_id=8d9ca4fb-d4d3-45fe-bcff-62c17bad8fbd
+[I 2026-01-16T01:07:27.584] Request completed status_code=200 path= logger=root request_id=8d9ca4fb-d4d3-45fe-bcff-62c17bad8fbd
+[I 2026-01-16T01:07:27.585] 127.0.0.1 - - [16/Jan/2026 01:07:27] "POST / HTTP/1.1" 200 -
+ 63% 125/198 [06:58<02:51,  2.35s/it][I 2026-01-16T01:07:27.898] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=300b2989-6ee0-4145-bb5b-ee0a0767999f
+[W 2026-01-16T01:07:27.898] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=300b2989-6ee0-4145-bb5b-ee0a0767999f
+[I 2026-01-16T01:07:28.108] Cached successful response cache_key=9cacc8de... logger=CachingInterceptor request_id=513506c6-8ed3-40ee-bfbe-a5ff21f2d9d3
+[I 2026-01-16T01:07:28.108] Request completed status_code=200 path= logger=root request_id=513506c6-8ed3-40ee-bfbe-a5ff21f2d9d3
+[I 2026-01-16T01:07:28.109] 127.0.0.1 - - [16/Jan/2026 01:07:28] "POST / HTTP/1.1" 200 -
+ 64% 126/198 [06:59<02:13,  1.86s/it][I 2026-01-16T01:07:28.594] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6cd6600a-b9c5-4962-a92a-f89bf9167214
+[W 2026-01-16T01:07:28.594] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6cd6600a-b9c5-4962-a92a-f89bf9167214
+[I 2026-01-16T01:07:29.827] Cached successful response cache_key=0a9c67ee... logger=CachingInterceptor request_id=48607349-659d-4e7c-a1d7-1bec33c150fe
+[I 2026-01-16T01:07:29.827] Request completed status_code=200 path= logger=root request_id=48607349-659d-4e7c-a1d7-1bec33c150fe
+[I 2026-01-16T01:07:29.828] 127.0.0.1 - - [16/Jan/2026 01:07:29] "POST / HTTP/1.1" 200 -
+ 64% 127/198 [07:00<02:07,  1.80s/it][I 2026-01-16T01:07:30.263] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5b95c1b4-f773-4648-b793-6ed820073a95
+[W 2026-01-16T01:07:30.263] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5b95c1b4-f773-4648-b793-6ed820073a95
+[I 2026-01-16T01:07:31.822] Cached successful response cache_key=0efabffa... logger=CachingInterceptor request_id=300b2989-6ee0-4145-bb5b-ee0a0767999f
+[I 2026-01-16T01:07:31.822] Request completed status_code=200 path= logger=root request_id=300b2989-6ee0-4145-bb5b-ee0a0767999f
+[I 2026-01-16T01:07:31.824] 127.0.0.1 - - [16/Jan/2026 01:07:31] "POST / HTTP/1.1" 200 -
+ 65% 128/198 [07:02<02:07,  1.83s/it][I 2026-01-16T01:07:32.145] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=459a3098-477a-4781-9ee5-4d5b959d988b
+[W 2026-01-16T01:07:32.145] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=459a3098-477a-4781-9ee5-4d5b959d988b
+[I 2026-01-16T01:07:34.932] Cached successful response cache_key=69dd0323... logger=CachingInterceptor request_id=5b95c1b4-f773-4648-b793-6ed820073a95
+[I 2026-01-16T01:07:34.933] Request completed status_code=200 path= logger=root request_id=5b95c1b4-f773-4648-b793-6ed820073a95
+[I 2026-01-16T01:07:34.934] 127.0.0.1 - - [16/Jan/2026 01:07:34] "POST / HTTP/1.1" 200 -
+ 65% 129/198 [07:05<02:32,  2.22s/it][I 2026-01-16T01:07:35.275] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=98f0b1e1-96b5-44ec-99a8-37cc9ebc18c0
+[W 2026-01-16T01:07:35.275] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=98f0b1e1-96b5-44ec-99a8-37cc9ebc18c0
+[I 2026-01-16T01:07:35.340] Cached successful response cache_key=7c7b96b1... logger=CachingInterceptor request_id=7f6207c8-e9a9-4af0-8a4b-88afe88e766f
+[I 2026-01-16T01:07:35.340] Request completed status_code=200 path= logger=root request_id=7f6207c8-e9a9-4af0-8a4b-88afe88e766f
+[I 2026-01-16T01:07:35.341] 127.0.0.1 - - [16/Jan/2026 01:07:35] "POST / HTTP/1.1" 200 -
+ 66% 130/198 [07:06<01:53,  1.66s/it][I 2026-01-16T01:07:35.652] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=fc8e03fe-a369-4ec9-a201-0bba36532ae0
+[W 2026-01-16T01:07:35.652] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=fc8e03fe-a369-4ec9-a201-0bba36532ae0
+[I 2026-01-16T01:07:35.932] Cached successful response cache_key=08c1ce59... logger=CachingInterceptor request_id=459a3098-477a-4781-9ee5-4d5b959d988b
+[I 2026-01-16T01:07:35.932] Request completed status_code=200 path= logger=root request_id=459a3098-477a-4781-9ee5-4d5b959d988b
+[I 2026-01-16T01:07:35.934] 127.0.0.1 - - [16/Jan/2026 01:07:35] "POST / HTTP/1.1" 200 -
+ 66% 131/198 [07:06<01:29,  1.34s/it][I 2026-01-16T01:07:36.244] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=84e5d098-bf3d-4075-9010-0ed0e90f0e71
+[W 2026-01-16T01:07:36.245] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=84e5d098-bf3d-4075-9010-0ed0e90f0e71
+[I 2026-01-16T01:07:38.625] Cached successful response cache_key=7b679b08... logger=CachingInterceptor request_id=98f0b1e1-96b5-44ec-99a8-37cc9ebc18c0
+[I 2026-01-16T01:07:38.625] Request completed status_code=200 path= logger=root request_id=98f0b1e1-96b5-44ec-99a8-37cc9ebc18c0
+[I 2026-01-16T01:07:38.626] 127.0.0.1 - - [16/Jan/2026 01:07:38] "POST / HTTP/1.1" 200 -
+ 67% 132/198 [07:09<01:53,  1.72s/it][I 2026-01-16T01:07:38.857] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=db1398bb-e8ad-4cc7-8dd2-0cd407824df3
+[W 2026-01-16T01:07:38.857] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=db1398bb-e8ad-4cc7-8dd2-0cd407824df3
+[I 2026-01-16T01:07:40.448] Cached successful response cache_key=473b5610... logger=CachingInterceptor request_id=fc8e03fe-a369-4ec9-a201-0bba36532ae0
+[I 2026-01-16T01:07:40.448] Request completed status_code=200 path= logger=root request_id=fc8e03fe-a369-4ec9-a201-0bba36532ae0
+[I 2026-01-16T01:07:40.449] 127.0.0.1 - - [16/Jan/2026 01:07:40] "POST / HTTP/1.1" 200 -
+ 67% 133/198 [07:11<01:56,  1.79s/it][I 2026-01-16T01:07:40.815] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3f271e23-4d1b-454c-aef2-ef498f6c79e4
+[W 2026-01-16T01:07:40.815] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3f271e23-4d1b-454c-aef2-ef498f6c79e4
+[I 2026-01-16T01:07:46.854] Cached successful response cache_key=33924b49... logger=CachingInterceptor request_id=84e5d098-bf3d-4075-9010-0ed0e90f0e71
+[I 2026-01-16T01:07:46.855] Request completed status_code=200 path= logger=root request_id=84e5d098-bf3d-4075-9010-0ed0e90f0e71
+[I 2026-01-16T01:07:46.856] 127.0.0.1 - - [16/Jan/2026 01:07:46] "POST / HTTP/1.1" 200 -
+ 68% 134/198 [07:17<03:20,  3.14s/it][I 2026-01-16T01:07:47.089] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=12b7b348-92a6-40c6-810b-f52281413021
+[W 2026-01-16T01:07:47.090] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=12b7b348-92a6-40c6-810b-f52281413021
+[I 2026-01-16T01:07:47.557] Cached successful response cache_key=eed6aceb... logger=CachingInterceptor request_id=6cd6600a-b9c5-4962-a92a-f89bf9167214
+[I 2026-01-16T01:07:47.557] Request completed status_code=200 path= logger=root request_id=6cd6600a-b9c5-4962-a92a-f89bf9167214
+[I 2026-01-16T01:07:47.558] 127.0.0.1 - - [16/Jan/2026 01:07:47] "POST / HTTP/1.1" 200 -
+ 68% 135/198 [07:18<02:33,  2.43s/it][I 2026-01-16T01:07:47.873] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f84ed016-db05-4dba-aaa5-c2bc65a22570
+[W 2026-01-16T01:07:47.873] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f84ed016-db05-4dba-aaa5-c2bc65a22570
+[I 2026-01-16T01:07:48.169] Cached successful response cache_key=ccf3abaa... logger=CachingInterceptor request_id=3f271e23-4d1b-454c-aef2-ef498f6c79e4
+[I 2026-01-16T01:07:48.169] Request completed status_code=200 path= logger=root request_id=3f271e23-4d1b-454c-aef2-ef498f6c79e4
+[I 2026-01-16T01:07:48.170] 127.0.0.1 - - [16/Jan/2026 01:07:48] "POST / HTTP/1.1" 200 -
+ 69% 136/198 [07:18<01:57,  1.89s/it][I 2026-01-16T01:07:48.514] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=69bc2ff7-6ccb-44a4-9cd9-c760ae2854a6
+[W 2026-01-16T01:07:48.514] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=69bc2ff7-6ccb-44a4-9cd9-c760ae2854a6
+[I 2026-01-16T01:07:51.590] Cached successful response cache_key=997c17da... logger=CachingInterceptor request_id=db1398bb-e8ad-4cc7-8dd2-0cd407824df3
+[I 2026-01-16T01:07:51.590] Request completed status_code=200 path= logger=root request_id=db1398bb-e8ad-4cc7-8dd2-0cd407824df3
+[I 2026-01-16T01:07:51.592] 127.0.0.1 - - [16/Jan/2026 01:07:51] "POST / HTTP/1.1" 200 -
+ 69% 137/198 [07:22<02:23,  2.35s/it][I 2026-01-16T01:07:51.936] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=649e6a3d-a534-4081-a0cb-6d7a157f0f99
+[W 2026-01-16T01:07:51.936] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=649e6a3d-a534-4081-a0cb-6d7a157f0f99
+[I 2026-01-16T01:07:52.815] Cached successful response cache_key=9f51de0f... logger=CachingInterceptor request_id=69bc2ff7-6ccb-44a4-9cd9-c760ae2854a6
+[I 2026-01-16T01:07:52.815] Request completed status_code=200 path= logger=root request_id=69bc2ff7-6ccb-44a4-9cd9-c760ae2854a6
+[I 2026-01-16T01:07:52.816] 127.0.0.1 - - [16/Jan/2026 01:07:52] "POST / HTTP/1.1" 200 -
+ 70% 138/198 [07:23<02:02,  2.03s/it][I 2026-01-16T01:07:53.225] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8cedbfe1-9694-4299-b007-1e715532d6ea
+[W 2026-01-16T01:07:53.225] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8cedbfe1-9694-4299-b007-1e715532d6ea
+[I 2026-01-16T01:07:53.953] Cached successful response cache_key=846cc60b... logger=CachingInterceptor request_id=f84ed016-db05-4dba-aaa5-c2bc65a22570
+[I 2026-01-16T01:07:53.953] Request completed status_code=200 path= logger=root request_id=f84ed016-db05-4dba-aaa5-c2bc65a22570
+[I 2026-01-16T01:07:53.954] 127.0.0.1 - - [16/Jan/2026 01:07:53] "POST / HTTP/1.1" 200 -
+ 70% 139/198 [07:24<01:43,  1.75s/it][I 2026-01-16T01:07:54.302] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6bd674f0-3d63-4efe-8267-a62dc0123fc9
+[W 2026-01-16T01:07:54.303] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6bd674f0-3d63-4efe-8267-a62dc0123fc9
+[I 2026-01-16T01:07:57.857] Cached successful response cache_key=79b2fa57... logger=CachingInterceptor request_id=8cedbfe1-9694-4299-b007-1e715532d6ea
+[I 2026-01-16T01:07:57.857] Request completed status_code=200 path= logger=root request_id=8cedbfe1-9694-4299-b007-1e715532d6ea
+[I 2026-01-16T01:07:57.859] 127.0.0.1 - - [16/Jan/2026 01:07:57] "POST / HTTP/1.1" 200 -
+ 71% 140/198 [07:28<02:17,  2.37s/it][I 2026-01-16T01:07:58.112] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f863f241-aca3-40b1-becd-ee51c056ec31
+[W 2026-01-16T01:07:58.112] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f863f241-aca3-40b1-becd-ee51c056ec31
+[I 2026-01-16T01:08:01.603] Cached successful response cache_key=5bac01b5... logger=CachingInterceptor request_id=649e6a3d-a534-4081-a0cb-6d7a157f0f99
+[I 2026-01-16T01:08:01.604] Request completed status_code=200 path= logger=root request_id=649e6a3d-a534-4081-a0cb-6d7a157f0f99
+[I 2026-01-16T01:08:01.605] 127.0.0.1 - - [16/Jan/2026 01:08:01] "POST / HTTP/1.1" 200 -
+ 71% 141/198 [07:32<02:37,  2.77s/it][I 2026-01-16T01:08:01.830] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d0698b69-ad91-4d28-9f53-c36cdebd1100
+[W 2026-01-16T01:08:01.831] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d0698b69-ad91-4d28-9f53-c36cdebd1100
+[I 2026-01-16T01:08:03.409] Cached successful response cache_key=fd49993b... logger=CachingInterceptor request_id=12b7b348-92a6-40c6-810b-f52281413021
+[I 2026-01-16T01:08:03.409] Request completed status_code=200 path= logger=root request_id=12b7b348-92a6-40c6-810b-f52281413021
+[I 2026-01-16T01:08:03.410] 127.0.0.1 - - [16/Jan/2026 01:08:03] "POST / HTTP/1.1" 200 -
+ 72% 142/198 [07:34<02:22,  2.54s/it][I 2026-01-16T01:08:03.844] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=57c53d08-bb49-47b4-9f01-c970526efc96
+[W 2026-01-16T01:08:03.845] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=57c53d08-bb49-47b4-9f01-c970526efc96
+[I 2026-01-16T01:08:04.183] Cached successful response cache_key=b8f8f5c6... logger=CachingInterceptor request_id=6bd674f0-3d63-4efe-8267-a62dc0123fc9
+[I 2026-01-16T01:08:04.183] Request completed status_code=200 path= logger=root request_id=6bd674f0-3d63-4efe-8267-a62dc0123fc9
+[I 2026-01-16T01:08:04.184] 127.0.0.1 - - [16/Jan/2026 01:08:04] "POST / HTTP/1.1" 200 -
+ 72% 143/198 [07:34<01:48,  1.97s/it][I 2026-01-16T01:08:04.467] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7cd9449c-c2f3-4f4b-b6c6-19e658445bca
+[W 2026-01-16T01:08:04.468] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7cd9449c-c2f3-4f4b-b6c6-19e658445bca
+[I 2026-01-16T01:08:04.969] Cached successful response cache_key=564779f3... logger=CachingInterceptor request_id=d0698b69-ad91-4d28-9f53-c36cdebd1100
+[I 2026-01-16T01:08:04.969] Request completed status_code=200 path= logger=root request_id=d0698b69-ad91-4d28-9f53-c36cdebd1100
+[I 2026-01-16T01:08:04.970] 127.0.0.1 - - [16/Jan/2026 01:08:04] "POST / HTTP/1.1" 200 -
+ 73% 144/198 [07:35<01:25,  1.59s/it][I 2026-01-16T01:08:05.184] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ebb75337-c3f3-4931-8c79-e0ad4a55fc5e
+[W 2026-01-16T01:08:05.184] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ebb75337-c3f3-4931-8c79-e0ad4a55fc5e
+[I 2026-01-16T01:08:07.497] Cached successful response cache_key=5c57a237... logger=CachingInterceptor request_id=f863f241-aca3-40b1-becd-ee51c056ec31
+[I 2026-01-16T01:08:07.497] Request completed status_code=200 path= logger=root request_id=f863f241-aca3-40b1-becd-ee51c056ec31
+[I 2026-01-16T01:08:07.498] 127.0.0.1 - - [16/Jan/2026 01:08:07] "POST / HTTP/1.1" 200 -
+ 73% 145/198 [07:38<01:39,  1.88s/it][I 2026-01-16T01:08:07.742] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=81d6cfaf-2b1a-411c-8917-4cfaf8caaed8
+[W 2026-01-16T01:08:07.743] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=81d6cfaf-2b1a-411c-8917-4cfaf8caaed8
+[I 2026-01-16T01:08:09.478] Cached successful response cache_key=c8e7c443... logger=CachingInterceptor request_id=ebb75337-c3f3-4931-8c79-e0ad4a55fc5e
+[I 2026-01-16T01:08:09.478] Request completed status_code=200 path= logger=root request_id=ebb75337-c3f3-4931-8c79-e0ad4a55fc5e
+[I 2026-01-16T01:08:09.479] 127.0.0.1 - - [16/Jan/2026 01:08:09] "POST / HTTP/1.1" 200 -
+ 74% 146/198 [07:40<01:43,  2.00s/it][I 2026-01-16T01:08:10.013] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9d5c877e-eaa8-4f59-8ee2-0231f3ed9794
+[W 2026-01-16T01:08:10.013] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9d5c877e-eaa8-4f59-8ee2-0231f3ed9794
+[I 2026-01-16T01:08:10.635] Cached successful response cache_key=58f5cbf5... logger=CachingInterceptor request_id=7cd9449c-c2f3-4f4b-b6c6-19e658445bca
+[I 2026-01-16T01:08:10.635] Request completed status_code=200 path= logger=root request_id=7cd9449c-c2f3-4f4b-b6c6-19e658445bca
+[I 2026-01-16T01:08:10.636] 127.0.0.1 - - [16/Jan/2026 01:08:10] "POST / HTTP/1.1" 200 -
+ 74% 147/198 [07:41<01:29,  1.76s/it][I 2026-01-16T01:08:11.208] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9b163b3d-c02a-4b50-84b6-172204d794c4
+[W 2026-01-16T01:08:11.208] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9b163b3d-c02a-4b50-84b6-172204d794c4
+[I 2026-01-16T01:08:12.048] Cached successful response cache_key=8f410039... logger=CachingInterceptor request_id=81d6cfaf-2b1a-411c-8917-4cfaf8caaed8
+[I 2026-01-16T01:08:12.048] Request completed status_code=200 path= logger=root request_id=81d6cfaf-2b1a-411c-8917-4cfaf8caaed8
+[I 2026-01-16T01:08:12.050] 127.0.0.1 - - [16/Jan/2026 01:08:12] "POST / HTTP/1.1" 200 -
+ 75% 148/198 [07:42<01:20,  1.61s/it][I 2026-01-16T01:08:12.482] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d1cbce39-8e73-410d-b431-0eb06ad78db1
+[W 2026-01-16T01:08:12.482] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d1cbce39-8e73-410d-b431-0eb06ad78db1
+[I 2026-01-16T01:08:16.561] Cached successful response cache_key=2ca839a4... logger=CachingInterceptor request_id=9d5c877e-eaa8-4f59-8ee2-0231f3ed9794
+[I 2026-01-16T01:08:16.561] Request completed status_code=200 path= logger=root request_id=9d5c877e-eaa8-4f59-8ee2-0231f3ed9794
+[I 2026-01-16T01:08:16.562] 127.0.0.1 - - [16/Jan/2026 01:08:16] "POST / HTTP/1.1" 200 -
+ 75% 149/198 [07:47<01:58,  2.41s/it][I 2026-01-16T01:08:16.768] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=592d51fa-8222-4312-bb61-493403db34ce
+[W 2026-01-16T01:08:16.768] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=592d51fa-8222-4312-bb61-493403db34ce
+[I 2026-01-16T01:08:22.515] Cached successful response cache_key=c7a02323... logger=CachingInterceptor request_id=9b163b3d-c02a-4b50-84b6-172204d794c4
+[I 2026-01-16T01:08:22.515] Request completed status_code=200 path= logger=root request_id=9b163b3d-c02a-4b50-84b6-172204d794c4
+[I 2026-01-16T01:08:22.516] 127.0.0.1 - - [16/Jan/2026 01:08:22] "POST / HTTP/1.1" 200 -
+ 76% 150/198 [07:53<02:49,  3.53s/it][I 2026-01-16T01:08:22.915] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a92897ee-5fac-41ca-a522-6afad1c322d5
+[W 2026-01-16T01:08:22.915] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a92897ee-5fac-41ca-a522-6afad1c322d5
+[I 2026-01-16T01:08:24.385] Cached successful response cache_key=df3eb7b9... logger=CachingInterceptor request_id=d1cbce39-8e73-410d-b431-0eb06ad78db1
+[I 2026-01-16T01:08:24.385] Request completed status_code=200 path= logger=root request_id=d1cbce39-8e73-410d-b431-0eb06ad78db1
+[I 2026-01-16T01:08:24.386] 127.0.0.1 - - [16/Jan/2026 01:08:24] "POST / HTTP/1.1" 200 -
+ 76% 151/198 [07:55<02:22,  3.03s/it][I 2026-01-16T01:08:24.763] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=65ed51a1-d9cb-4251-aad0-255f973f7649
+[W 2026-01-16T01:08:24.763] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=65ed51a1-d9cb-4251-aad0-255f973f7649
+[I 2026-01-16T01:08:25.328] Cached successful response cache_key=b728c7de... logger=CachingInterceptor request_id=57c53d08-bb49-47b4-9f01-c970526efc96
+[I 2026-01-16T01:08:25.329] Request completed status_code=200 path= logger=root request_id=57c53d08-bb49-47b4-9f01-c970526efc96
+[I 2026-01-16T01:08:25.330] 127.0.0.1 - - [16/Jan/2026 01:08:25] "POST / HTTP/1.1" 200 -
+ 77% 152/198 [07:56<01:49,  2.39s/it][I 2026-01-16T01:08:25.647] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=18376a39-f7c1-4bf4-96c8-cf7d8c4825d6
+[W 2026-01-16T01:08:25.648] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=18376a39-f7c1-4bf4-96c8-cf7d8c4825d6
+[I 2026-01-16T01:08:25.739] Cached successful response cache_key=33c9aced... logger=CachingInterceptor request_id=592d51fa-8222-4312-bb61-493403db34ce
+[I 2026-01-16T01:08:25.739] Request completed status_code=200 path= logger=root request_id=592d51fa-8222-4312-bb61-493403db34ce
+[I 2026-01-16T01:08:25.740] 127.0.0.1 - - [16/Jan/2026 01:08:25] "POST / HTTP/1.1" 200 -
+ 77% 153/198 [07:56<01:20,  1.79s/it][I 2026-01-16T01:08:26.054] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d489ab96-32a5-484b-8fdc-8151bc81d8a3
+[W 2026-01-16T01:08:26.054] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d489ab96-32a5-484b-8fdc-8151bc81d8a3
+[I 2026-01-16T01:08:28.734] Cached successful response cache_key=fcaf1e43... logger=CachingInterceptor request_id=65ed51a1-d9cb-4251-aad0-255f973f7649
+[I 2026-01-16T01:08:28.734] Request completed status_code=200 path= logger=root request_id=65ed51a1-d9cb-4251-aad0-255f973f7649
+[I 2026-01-16T01:08:28.735] 127.0.0.1 - - [16/Jan/2026 01:08:28] "POST / HTTP/1.1" 200 -
+ 78% 154/198 [07:59<01:34,  2.14s/it][I 2026-01-16T01:08:28.998] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3a22c000-072f-459f-ba19-f3a8e32f6576
+[W 2026-01-16T01:08:28.998] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3a22c000-072f-459f-ba19-f3a8e32f6576
+[I 2026-01-16T01:08:30.229] Cached successful response cache_key=3da5a9c4... logger=CachingInterceptor request_id=d489ab96-32a5-484b-8fdc-8151bc81d8a3
+[I 2026-01-16T01:08:30.229] Request completed status_code=200 path= logger=root request_id=d489ab96-32a5-484b-8fdc-8151bc81d8a3
+[I 2026-01-16T01:08:30.230] 127.0.0.1 - - [16/Jan/2026 01:08:30] "POST / HTTP/1.1" 200 -
+ 78% 155/198 [08:01<01:25,  1.99s/it][I 2026-01-16T01:08:30.660] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=21be6903-4049-48d8-934f-46abcb51bbfd
+[W 2026-01-16T01:08:30.660] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=21be6903-4049-48d8-934f-46abcb51bbfd
+[I 2026-01-16T01:08:31.259] Cached successful response cache_key=f226d95d... logger=CachingInterceptor request_id=18376a39-f7c1-4bf4-96c8-cf7d8c4825d6
+[I 2026-01-16T01:08:31.260] Request completed status_code=200 path= logger=root request_id=18376a39-f7c1-4bf4-96c8-cf7d8c4825d6
+[I 2026-01-16T01:08:31.261] 127.0.0.1 - - [16/Jan/2026 01:08:31] "POST / HTTP/1.1" 200 -
+ 79% 156/198 [08:02<01:10,  1.68s/it][I 2026-01-16T01:08:31.592] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=46fdb14c-e72e-474c-958a-ce89c15f4b28
+[W 2026-01-16T01:08:31.593] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=46fdb14c-e72e-474c-958a-ce89c15f4b28
+[I 2026-01-16T01:08:32.224] Cached successful response cache_key=d0845898... logger=CachingInterceptor request_id=3a22c000-072f-459f-ba19-f3a8e32f6576
+[I 2026-01-16T01:08:32.224] Request completed status_code=200 path= logger=root request_id=3a22c000-072f-459f-ba19-f3a8e32f6576
+[I 2026-01-16T01:08:32.225] 127.0.0.1 - - [16/Jan/2026 01:08:32] "POST / HTTP/1.1" 200 -
+ 79% 157/198 [08:03<00:59,  1.46s/it][I 2026-01-16T01:08:32.541] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=febaad25-0b1f-479f-b644-cea9fe7c0b09
+[W 2026-01-16T01:08:32.542] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=febaad25-0b1f-479f-b644-cea9fe7c0b09
+[I 2026-01-16T01:08:42.375] Cached successful response cache_key=5941d3f5... logger=CachingInterceptor request_id=21be6903-4049-48d8-934f-46abcb51bbfd
+[I 2026-01-16T01:08:42.375] Request completed status_code=200 path= logger=root request_id=21be6903-4049-48d8-934f-46abcb51bbfd
+[I 2026-01-16T01:08:42.376] 127.0.0.1 - - [16/Jan/2026 01:08:42] "POST / HTTP/1.1" 200 -
+ 80% 158/198 [08:13<02:42,  4.05s/it][I 2026-01-16T01:08:42.648] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=aeb6df88-9e5e-46cc-be70-223d90c62842
+[W 2026-01-16T01:08:42.648] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=aeb6df88-9e5e-46cc-be70-223d90c62842
+[I 2026-01-16T01:08:43.444] Cached successful response cache_key=161e12da... logger=CachingInterceptor request_id=46fdb14c-e72e-474c-958a-ce89c15f4b28
+[I 2026-01-16T01:08:43.444] Request completed status_code=200 path= logger=root request_id=46fdb14c-e72e-474c-958a-ce89c15f4b28
+[I 2026-01-16T01:08:43.445] 127.0.0.1 - - [16/Jan/2026 01:08:43] "POST / HTTP/1.1" 200 -
+ 80% 159/198 [08:14<02:05,  3.21s/it][I 2026-01-16T01:08:43.886] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a16277f9-d87f-4851-9182-e727cbbe79da
+[W 2026-01-16T01:08:43.886] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=a16277f9-d87f-4851-9182-e727cbbe79da
+[I 2026-01-16T01:08:49.380] Cached successful response cache_key=c8f3cc52... logger=CachingInterceptor request_id=a92897ee-5fac-41ca-a522-6afad1c322d5
+[I 2026-01-16T01:08:49.380] Request completed status_code=200 path= logger=root request_id=a92897ee-5fac-41ca-a522-6afad1c322d5
+[I 2026-01-16T01:08:49.381] 127.0.0.1 - - [16/Jan/2026 01:08:49] "POST / HTTP/1.1" 200 -
+ 81% 160/198 [08:20<02:31,  3.98s/it][I 2026-01-16T01:08:49.657] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=43c5c9c9-19ed-454e-b3bc-1e7cdb1d25a8
+[W 2026-01-16T01:08:49.658] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=43c5c9c9-19ed-454e-b3bc-1e7cdb1d25a8
+[I 2026-01-16T01:08:50.635] Cached successful response cache_key=11d30a35... logger=CachingInterceptor request_id=febaad25-0b1f-479f-b644-cea9fe7c0b09
+[I 2026-01-16T01:08:50.635] Request completed status_code=200 path= logger=root request_id=febaad25-0b1f-479f-b644-cea9fe7c0b09
+[I 2026-01-16T01:08:50.636] 127.0.0.1 - - [16/Jan/2026 01:08:50] "POST / HTTP/1.1" 200 -
+[I 2026-01-16T01:08:51.148] Cached successful response cache_key=de3833d5... logger=CachingInterceptor request_id=aeb6df88-9e5e-46cc-be70-223d90c62842
+[I 2026-01-16T01:08:51.148] Request completed status_code=200 path= logger=root request_id=aeb6df88-9e5e-46cc-be70-223d90c62842
+[I 2026-01-16T01:08:51.149] 127.0.0.1 - - [16/Jan/2026 01:08:51] "POST / HTTP/1.1" 200 -
+ 81% 161/198 [08:21<01:59,  3.23s/it] 82% 162/198 [08:22<01:25,  2.38s/it][I 2026-01-16T01:08:51.557] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=110c5505-5a1c-42da-a7bd-04d053554ba0
+[W 2026-01-16T01:08:51.558] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=110c5505-5a1c-42da-a7bd-04d053554ba0
+[I 2026-01-16T01:08:51.558] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=703eeec4-f253-4e0b-abd8-552a9d6d9890
+[W 2026-01-16T01:08:51.559] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=703eeec4-f253-4e0b-abd8-552a9d6d9890
+[I 2026-01-16T01:08:54.026] Cached successful response cache_key=e0bb180d... logger=CachingInterceptor request_id=43c5c9c9-19ed-454e-b3bc-1e7cdb1d25a8
+[I 2026-01-16T01:08:54.026] Request completed status_code=200 path= logger=root request_id=43c5c9c9-19ed-454e-b3bc-1e7cdb1d25a8
+[I 2026-01-16T01:08:54.027] 127.0.0.1 - - [16/Jan/2026 01:08:54] "POST / HTTP/1.1" 200 -
+ 82% 163/198 [08:24<01:27,  2.50s/it][I 2026-01-16T01:08:54.324] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=92038a79-4cd0-4ede-b6cb-5c5088a11f23
+[W 2026-01-16T01:08:54.324] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=92038a79-4cd0-4ede-b6cb-5c5088a11f23
+[I 2026-01-16T01:08:56.069] Cached successful response cache_key=be9f35a3... logger=CachingInterceptor request_id=a16277f9-d87f-4851-9182-e727cbbe79da
+[I 2026-01-16T01:08:56.069] Request completed status_code=200 path= logger=root request_id=a16277f9-d87f-4851-9182-e727cbbe79da
+[I 2026-01-16T01:08:56.070] 127.0.0.1 - - [16/Jan/2026 01:08:56] "POST / HTTP/1.1" 200 -
+ 83% 164/198 [08:26<01:21,  2.40s/it][I 2026-01-16T01:08:56.479] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=86424fe3-2011-4afd-bf34-e16eb178d0e9
+[W 2026-01-16T01:08:56.479] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=86424fe3-2011-4afd-bf34-e16eb178d0e9
+[I 2026-01-16T01:08:59.919] Cached successful response cache_key=ed746297... logger=CachingInterceptor request_id=92038a79-4cd0-4ede-b6cb-5c5088a11f23
+[I 2026-01-16T01:08:59.919] Request completed status_code=200 path= logger=root request_id=92038a79-4cd0-4ede-b6cb-5c5088a11f23
+[I 2026-01-16T01:08:59.920] 127.0.0.1 - - [16/Jan/2026 01:08:59] "POST / HTTP/1.1" 200 -
+ 83% 165/198 [08:30<01:32,  2.80s/it][I 2026-01-16T01:09:00.227] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d1478120-ad12-4fda-8fd9-5dd6a96d1e25
+[W 2026-01-16T01:09:00.227] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d1478120-ad12-4fda-8fd9-5dd6a96d1e25
+[I 2026-01-16T01:09:02.133] Cached successful response cache_key=58c25a2e... logger=CachingInterceptor request_id=86424fe3-2011-4afd-bf34-e16eb178d0e9
+[I 2026-01-16T01:09:02.134] Request completed status_code=200 path= logger=root request_id=86424fe3-2011-4afd-bf34-e16eb178d0e9
+[I 2026-01-16T01:09:02.135] 127.0.0.1 - - [16/Jan/2026 01:09:02] "POST / HTTP/1.1" 200 -
+ 84% 166/198 [08:33<01:25,  2.67s/it][I 2026-01-16T01:09:02.583] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=4a7722de-eabb-4160-bfed-a808e538841e
+[W 2026-01-16T01:09:02.583] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=4a7722de-eabb-4160-bfed-a808e538841e
+[I 2026-01-16T01:09:06.172] Cached successful response cache_key=ac7720ea... logger=CachingInterceptor request_id=703eeec4-f253-4e0b-abd8-552a9d6d9890
+[I 2026-01-16T01:09:06.173] Request completed status_code=200 path= logger=root request_id=703eeec4-f253-4e0b-abd8-552a9d6d9890
+[I 2026-01-16T01:09:06.174] 127.0.0.1 - - [16/Jan/2026 01:09:06] "POST / HTTP/1.1" 200 -
+ 84% 167/198 [08:37<01:36,  3.10s/it][I 2026-01-16T01:09:06.699] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2f6183e3-f79f-43e9-b96a-b5b2bfc019da
+[W 2026-01-16T01:09:06.699] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2f6183e3-f79f-43e9-b96a-b5b2bfc019da
+[I 2026-01-16T01:09:07.158] Cached successful response cache_key=0781ae8a... logger=CachingInterceptor request_id=110c5505-5a1c-42da-a7bd-04d053554ba0
+[I 2026-01-16T01:09:07.158] Request completed status_code=200 path= logger=root request_id=110c5505-5a1c-42da-a7bd-04d053554ba0
+[I 2026-01-16T01:09:07.159] 127.0.0.1 - - [16/Jan/2026 01:09:07] "POST / HTTP/1.1" 200 -
+ 85% 168/198 [08:38<01:12,  2.43s/it][I 2026-01-16T01:09:07.544] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b528b314-94f8-45b3-8b7f-7fa998467664
+[W 2026-01-16T01:09:07.544] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b528b314-94f8-45b3-8b7f-7fa998467664
+[I 2026-01-16T01:09:07.916] Cached successful response cache_key=2a6c1237... logger=CachingInterceptor request_id=4a7722de-eabb-4160-bfed-a808e538841e
+[I 2026-01-16T01:09:07.916] Request completed status_code=200 path= logger=root request_id=4a7722de-eabb-4160-bfed-a808e538841e
+[I 2026-01-16T01:09:07.917] 127.0.0.1 - - [16/Jan/2026 01:09:07] "POST / HTTP/1.1" 200 -
+ 85% 169/198 [08:38<00:55,  1.91s/it][I 2026-01-16T01:09:08.266] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3f1e1e3b-47d3-41bc-b49a-c173971070a2
+[W 2026-01-16T01:09:08.266] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3f1e1e3b-47d3-41bc-b49a-c173971070a2
+[I 2026-01-16T01:09:10.651] Cached successful response cache_key=71c63a27... logger=CachingInterceptor request_id=b528b314-94f8-45b3-8b7f-7fa998467664
+[I 2026-01-16T01:09:10.651] Request completed status_code=200 path= logger=root request_id=b528b314-94f8-45b3-8b7f-7fa998467664
+[I 2026-01-16T01:09:10.652] 127.0.0.1 - - [16/Jan/2026 01:09:10] "POST / HTTP/1.1" 200 -
+ 86% 170/198 [08:41<00:59,  2.13s/it][I 2026-01-16T01:09:10.900] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b488f9b9-4cc4-43e2-9dd5-bbd43f1c2c73
+[W 2026-01-16T01:09:10.900] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b488f9b9-4cc4-43e2-9dd5-bbd43f1c2c73
+[I 2026-01-16T01:09:12.196] Cached successful response cache_key=1e2cef40... logger=CachingInterceptor request_id=2f6183e3-f79f-43e9-b96a-b5b2bfc019da
+[I 2026-01-16T01:09:12.197] Request completed status_code=200 path= logger=root request_id=2f6183e3-f79f-43e9-b96a-b5b2bfc019da
+[I 2026-01-16T01:09:12.198] 127.0.0.1 - - [16/Jan/2026 01:09:12] "POST / HTTP/1.1" 200 -
+ 86% 171/198 [08:43<00:53,  1.99s/it][I 2026-01-16T01:09:12.549] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=00ecb650-0293-4c24-bfc0-85f9704fd85d
+[W 2026-01-16T01:09:12.550] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=00ecb650-0293-4c24-bfc0-85f9704fd85d
+[I 2026-01-16T01:09:12.647] Cached successful response cache_key=584f4c65... logger=CachingInterceptor request_id=3f1e1e3b-47d3-41bc-b49a-c173971070a2
+[I 2026-01-16T01:09:12.647] Request completed status_code=200 path= logger=root request_id=3f1e1e3b-47d3-41bc-b49a-c173971070a2
+[I 2026-01-16T01:09:12.648] 127.0.0.1 - - [16/Jan/2026 01:09:12] "POST / HTTP/1.1" 200 -
+ 87% 172/198 [08:43<00:39,  1.54s/it][I 2026-01-16T01:09:13.040] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=89900aa5-0cf2-4943-b589-f4363eab552e
+[W 2026-01-16T01:09:13.040] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=89900aa5-0cf2-4943-b589-f4363eab552e
+[I 2026-01-16T01:09:13.501] Cached successful response cache_key=275d1688... logger=CachingInterceptor request_id=d1478120-ad12-4fda-8fd9-5dd6a96d1e25
+[I 2026-01-16T01:09:13.501] Request completed status_code=200 path= logger=root request_id=d1478120-ad12-4fda-8fd9-5dd6a96d1e25
+[I 2026-01-16T01:09:13.502] 127.0.0.1 - - [16/Jan/2026 01:09:13] "POST / HTTP/1.1" 200 -
+ 87% 173/198 [08:44<00:33,  1.33s/it][I 2026-01-16T01:09:13.886] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bb5d8061-8f6d-44e8-9366-0ee8a5ea852f
+[W 2026-01-16T01:09:13.887] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=bb5d8061-8f6d-44e8-9366-0ee8a5ea852f
+[I 2026-01-16T01:09:15.933] Cached successful response cache_key=76160270... logger=CachingInterceptor request_id=b488f9b9-4cc4-43e2-9dd5-bbd43f1c2c73
+[I 2026-01-16T01:09:15.933] Request completed status_code=200 path= logger=root request_id=b488f9b9-4cc4-43e2-9dd5-bbd43f1c2c73
+[I 2026-01-16T01:09:15.934] 127.0.0.1 - - [16/Jan/2026 01:09:15] "POST / HTTP/1.1" 200 -
+ 88% 174/198 [08:46<00:38,  1.61s/it][I 2026-01-16T01:09:16.158] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6ff7ac51-b7c0-46fa-a26e-2896a436e61e
+[W 2026-01-16T01:09:16.158] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6ff7ac51-b7c0-46fa-a26e-2896a436e61e
+[I 2026-01-16T01:09:16.977] Cached successful response cache_key=fc1d02b0... logger=CachingInterceptor request_id=00ecb650-0293-4c24-bfc0-85f9704fd85d
+[I 2026-01-16T01:09:16.977] Request completed status_code=200 path= logger=root request_id=00ecb650-0293-4c24-bfc0-85f9704fd85d
+[I 2026-01-16T01:09:16.979] 127.0.0.1 - - [16/Jan/2026 01:09:16] "POST / HTTP/1.1" 200 -
+ 88% 175/198 [08:47<00:33,  1.45s/it][I 2026-01-16T01:09:17.230] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=76c2730a-74a2-4a73-820e-a11dfe11e889
+[W 2026-01-16T01:09:17.231] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=76c2730a-74a2-4a73-820e-a11dfe11e889
+[I 2026-01-16T01:09:17.419] Cached successful response cache_key=5d314686... logger=CachingInterceptor request_id=bb5d8061-8f6d-44e8-9366-0ee8a5ea852f
+[I 2026-01-16T01:09:17.419] Request completed status_code=200 path= logger=root request_id=bb5d8061-8f6d-44e8-9366-0ee8a5ea852f
+[I 2026-01-16T01:09:17.420] 127.0.0.1 - - [16/Jan/2026 01:09:17] "POST / HTTP/1.1" 200 -
+ 89% 176/198 [08:48<00:25,  1.16s/it][I 2026-01-16T01:09:17.696] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d6146081-26d5-4d82-b90c-127b7f3819d5
+[W 2026-01-16T01:09:17.697] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d6146081-26d5-4d82-b90c-127b7f3819d5
+[I 2026-01-16T01:09:20.600] Cached successful response cache_key=2270df38... logger=CachingInterceptor request_id=6ff7ac51-b7c0-46fa-a26e-2896a436e61e
+[I 2026-01-16T01:09:20.600] Request completed status_code=200 path= logger=root request_id=6ff7ac51-b7c0-46fa-a26e-2896a436e61e
+[I 2026-01-16T01:09:20.601] 127.0.0.1 - - [16/Jan/2026 01:09:20] "POST / HTTP/1.1" 200 -
+ 89% 177/198 [08:51<00:37,  1.80s/it][I 2026-01-16T01:09:20.991] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8ca72025-5883-4b6c-b72d-8bf2495f2efd
+[W 2026-01-16T01:09:20.991] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8ca72025-5883-4b6c-b72d-8bf2495f2efd
+[I 2026-01-16T01:09:22.826] Cached successful response cache_key=ded9510a... logger=CachingInterceptor request_id=76c2730a-74a2-4a73-820e-a11dfe11e889
+[I 2026-01-16T01:09:22.826] Request completed status_code=200 path= logger=root request_id=76c2730a-74a2-4a73-820e-a11dfe11e889
+[I 2026-01-16T01:09:22.827] 127.0.0.1 - - [16/Jan/2026 01:09:22] "POST / HTTP/1.1" 200 -
+ 90% 178/198 [08:53<00:38,  1.93s/it][I 2026-01-16T01:09:23.217] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8e7521ae-39cd-4ab8-9918-7c914f366675
+[W 2026-01-16T01:09:23.218] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8e7521ae-39cd-4ab8-9918-7c914f366675
+[I 2026-01-16T01:09:28.927] Cached successful response cache_key=7a866736... logger=CachingInterceptor request_id=8ca72025-5883-4b6c-b72d-8bf2495f2efd
+[I 2026-01-16T01:09:28.927] Request completed status_code=200 path= logger=root request_id=8ca72025-5883-4b6c-b72d-8bf2495f2efd
+[I 2026-01-16T01:09:28.928] 127.0.0.1 - - [16/Jan/2026 01:09:28] "POST / HTTP/1.1" 200 -
+ 90% 179/198 [08:59<01:00,  3.17s/it][I 2026-01-16T01:09:29.294] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=65c8e6a3-32f2-42b4-99fb-9dcac9f24ccd
+[W 2026-01-16T01:09:29.294] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=65c8e6a3-32f2-42b4-99fb-9dcac9f24ccd
+[I 2026-01-16T01:09:31.526] Cached successful response cache_key=c4e24843... logger=CachingInterceptor request_id=8e7521ae-39cd-4ab8-9918-7c914f366675
+[I 2026-01-16T01:09:31.526] Request completed status_code=200 path= logger=root request_id=8e7521ae-39cd-4ab8-9918-7c914f366675
+[I 2026-01-16T01:09:31.527] 127.0.0.1 - - [16/Jan/2026 01:09:31] "POST / HTTP/1.1" 200 -
+ 91% 180/198 [09:02<00:53,  3.00s/it][I 2026-01-16T01:09:31.880] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=33761d56-3605-4783-a9f2-c88f588cc429
+[W 2026-01-16T01:09:31.880] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=33761d56-3605-4783-a9f2-c88f588cc429
+[I 2026-01-16T01:09:32.208] Cached successful response cache_key=8f0eea12... logger=CachingInterceptor request_id=d6146081-26d5-4d82-b90c-127b7f3819d5
+[I 2026-01-16T01:09:32.208] Request completed status_code=200 path= logger=root request_id=d6146081-26d5-4d82-b90c-127b7f3819d5
+[I 2026-01-16T01:09:32.209] 127.0.0.1 - - [16/Jan/2026 01:09:32] "POST / HTTP/1.1" 200 -
+ 91% 181/198 [09:03<00:39,  2.30s/it][I 2026-01-16T01:09:32.545] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5d060e9b-dde4-4463-9327-323a9a3b87aa
+[W 2026-01-16T01:09:32.545] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5d060e9b-dde4-4463-9327-323a9a3b87aa
+[I 2026-01-16T01:09:34.025] Cached successful response cache_key=fc0d5d50... logger=CachingInterceptor request_id=65c8e6a3-32f2-42b4-99fb-9dcac9f24ccd
+[I 2026-01-16T01:09:34.025] Request completed status_code=200 path= logger=root request_id=65c8e6a3-32f2-42b4-99fb-9dcac9f24ccd
+[I 2026-01-16T01:09:34.026] 127.0.0.1 - - [16/Jan/2026 01:09:34] "POST / HTTP/1.1" 200 -
+ 92% 182/198 [09:04<00:34,  2.16s/it][I 2026-01-16T01:09:34.386] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2e7d4080-558a-4bb9-bcb5-f8087e77b083
+[W 2026-01-16T01:09:34.386] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2e7d4080-558a-4bb9-bcb5-f8087e77b083
+[I 2026-01-16T01:09:34.693] Cached successful response cache_key=d05d5504... logger=CachingInterceptor request_id=89900aa5-0cf2-4943-b589-f4363eab552e
+[I 2026-01-16T01:09:34.693] Request completed status_code=200 path= logger=root request_id=89900aa5-0cf2-4943-b589-f4363eab552e
+[I 2026-01-16T01:09:34.694] 127.0.0.1 - - [16/Jan/2026 01:09:34] "POST / HTTP/1.1" 200 -
+ 92% 183/198 [09:05<00:25,  1.71s/it][I 2026-01-16T01:09:35.034] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=60746d3e-1bf9-4816-9338-bf8e064b15a0
+[W 2026-01-16T01:09:35.034] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=60746d3e-1bf9-4816-9338-bf8e064b15a0
+[I 2026-01-16T01:09:35.833] Cached successful response cache_key=80a65ceb... logger=CachingInterceptor request_id=33761d56-3605-4783-a9f2-c88f588cc429
+[I 2026-01-16T01:09:35.833] Request completed status_code=200 path= logger=root request_id=33761d56-3605-4783-a9f2-c88f588cc429
+[I 2026-01-16T01:09:35.834] 127.0.0.1 - - [16/Jan/2026 01:09:35] "POST / HTTP/1.1" 200 -
+ 93% 184/198 [09:06<00:21,  1.54s/it][I 2026-01-16T01:09:36.170] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6fcccf67-a6db-4307-b341-0a6c95358114
+[W 2026-01-16T01:09:36.171] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6fcccf67-a6db-4307-b341-0a6c95358114
+[I 2026-01-16T01:09:38.803] Cached successful response cache_key=f93243cc... logger=CachingInterceptor request_id=5d060e9b-dde4-4463-9327-323a9a3b87aa
+[I 2026-01-16T01:09:38.804] Request completed status_code=200 path= logger=root request_id=5d060e9b-dde4-4463-9327-323a9a3b87aa
+[I 2026-01-16T01:09:38.805] 127.0.0.1 - - [16/Jan/2026 01:09:38] "POST / HTTP/1.1" 200 -
+ 93% 185/198 [09:09<00:25,  1.95s/it][I 2026-01-16T01:09:39.079] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=45a91209-6c5d-45e5-bd62-52449fb89f67
+[W 2026-01-16T01:09:39.080] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=45a91209-6c5d-45e5-bd62-52449fb89f67
+[I 2026-01-16T01:09:39.691] Cached successful response cache_key=1bfbb5ed... logger=CachingInterceptor request_id=2e7d4080-558a-4bb9-bcb5-f8087e77b083
+[I 2026-01-16T01:09:39.692] Request completed status_code=200 path= logger=root request_id=2e7d4080-558a-4bb9-bcb5-f8087e77b083
+[I 2026-01-16T01:09:39.693] 127.0.0.1 - - [16/Jan/2026 01:09:39] "POST / HTTP/1.1" 200 -
+ 94% 186/198 [09:10<00:19,  1.62s/it][I 2026-01-16T01:09:39.945] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=13321c35-4201-4422-8a48-73b044e79a54
+[W 2026-01-16T01:09:39.945] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=13321c35-4201-4422-8a48-73b044e79a54
+[I 2026-01-16T01:09:40.422] Cached successful response cache_key=adf34ea6... logger=CachingInterceptor request_id=6fcccf67-a6db-4307-b341-0a6c95358114
+[I 2026-01-16T01:09:40.422] Request completed status_code=200 path= logger=root request_id=6fcccf67-a6db-4307-b341-0a6c95358114
+[I 2026-01-16T01:09:40.423] 127.0.0.1 - - [16/Jan/2026 01:09:40] "POST / HTTP/1.1" 200 -
+ 94% 187/198 [09:11<00:15,  1.39s/it][I 2026-01-16T01:09:40.793] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=039b4835-e172-42e3-a660-8f365974a570
+[W 2026-01-16T01:09:40.793] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=039b4835-e172-42e3-a660-8f365974a570
+[I 2026-01-16T01:09:41.209] Cached successful response cache_key=b7a92e07... logger=CachingInterceptor request_id=60746d3e-1bf9-4816-9338-bf8e064b15a0
+[I 2026-01-16T01:09:41.209] Request completed status_code=200 path= logger=root request_id=60746d3e-1bf9-4816-9338-bf8e064b15a0
+[I 2026-01-16T01:09:41.210] 127.0.0.1 - - [16/Jan/2026 01:09:41] "POST / HTTP/1.1" 200 -
+ 95% 188/198 [09:12<00:11,  1.19s/it][I 2026-01-16T01:09:41.530] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7d1f24d2-1351-47e1-8a62-e07a9c7c54aa
+[W 2026-01-16T01:09:41.530] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7d1f24d2-1351-47e1-8a62-e07a9c7c54aa
+[I 2026-01-16T01:09:43.887] Cached successful response cache_key=6204c314... logger=CachingInterceptor request_id=45a91209-6c5d-45e5-bd62-52449fb89f67
+[I 2026-01-16T01:09:43.887] Request completed status_code=200 path= logger=root request_id=45a91209-6c5d-45e5-bd62-52449fb89f67
+[I 2026-01-16T01:09:43.888] 127.0.0.1 - - [16/Jan/2026 01:09:43] "POST / HTTP/1.1" 200 -
+ 95% 189/198 [09:14<00:15,  1.68s/it][I 2026-01-16T01:09:44.359] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=830752b7-231c-4d96-92ff-9b36c5d2dd03
+[W 2026-01-16T01:09:44.360] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=830752b7-231c-4d96-92ff-9b36c5d2dd03
+[I 2026-01-16T01:09:44.888] Cached successful response cache_key=2bf73b0d... logger=CachingInterceptor request_id=039b4835-e172-42e3-a660-8f365974a570
+[I 2026-01-16T01:09:44.889] Request completed status_code=200 path= logger=root request_id=039b4835-e172-42e3-a660-8f365974a570
+[I 2026-01-16T01:09:44.890] 127.0.0.1 - - [16/Jan/2026 01:09:44] "POST / HTTP/1.1" 200 -
+ 96% 190/198 [09:15<00:11,  1.46s/it][I 2026-01-16T01:09:45.287] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=945b16ac-22fd-406e-b2fb-adc32736b8e6
+[W 2026-01-16T01:09:45.287] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=945b16ac-22fd-406e-b2fb-adc32736b8e6
+[I 2026-01-16T01:09:45.853] Cached successful response cache_key=4282af5e... logger=CachingInterceptor request_id=7d1f24d2-1351-47e1-8a62-e07a9c7c54aa
+[I 2026-01-16T01:09:45.853] Request completed status_code=200 path= logger=root request_id=7d1f24d2-1351-47e1-8a62-e07a9c7c54aa
+[I 2026-01-16T01:09:45.855] 127.0.0.1 - - [16/Jan/2026 01:09:45] "POST / HTTP/1.1" 200 -
+ 96% 191/198 [09:16<00:09,  1.32s/it][I 2026-01-16T01:09:46.299] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=d93d7d21-ed7b-4426-95a7-aab877d3eb13
+[W 2026-01-16T01:09:46.299] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=d93d7d21-ed7b-4426-95a7-aab877d3eb13
+[I 2026-01-16T01:09:46.941] Cached successful response cache_key=45c33b31... logger=CachingInterceptor request_id=13321c35-4201-4422-8a48-73b044e79a54
+[I 2026-01-16T01:09:46.941] Request completed status_code=200 path= logger=root request_id=13321c35-4201-4422-8a48-73b044e79a54
+[I 2026-01-16T01:09:46.942] 127.0.0.1 - - [16/Jan/2026 01:09:46] "POST / HTTP/1.1" 200 -
+ 97% 192/198 [09:17<00:07,  1.23s/it][I 2026-01-16T01:09:47.323] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=61b6132e-707f-4219-850d-90f48fac0bc0
+[W 2026-01-16T01:09:47.323] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=61b6132e-707f-4219-850d-90f48fac0bc0
+[I 2026-01-16T01:09:49.596] Cached successful response cache_key=1bce259c... logger=CachingInterceptor request_id=945b16ac-22fd-406e-b2fb-adc32736b8e6
+[I 2026-01-16T01:09:49.596] Request completed status_code=200 path= logger=root request_id=945b16ac-22fd-406e-b2fb-adc32736b8e6
+[I 2026-01-16T01:09:49.597] 127.0.0.1 - - [16/Jan/2026 01:09:49] "POST / HTTP/1.1" 200 -
+ 97% 193/198 [09:20<00:08,  1.64s/it][I 2026-01-16T01:09:49.901] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=faa3d5df-f868-48bb-80ba-11363072b946
+[W 2026-01-16T01:09:49.901] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=faa3d5df-f868-48bb-80ba-11363072b946
+[I 2026-01-16T01:09:56.277] Cached successful response cache_key=7b8c4b7f... logger=CachingInterceptor request_id=830752b7-231c-4d96-92ff-9b36c5d2dd03
+[I 2026-01-16T01:09:56.277] Request completed status_code=200 path= logger=root request_id=830752b7-231c-4d96-92ff-9b36c5d2dd03
+[I 2026-01-16T01:09:56.279] 127.0.0.1 - - [16/Jan/2026 01:09:56] "POST / HTTP/1.1" 200 -
+ 98% 194/198 [09:27<00:12,  3.15s/it][I 2026-01-16T01:09:56.576] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b388c1ca-92cb-41ec-982e-24054f122647
+[W 2026-01-16T01:09:56.577] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b388c1ca-92cb-41ec-982e-24054f122647
+[I 2026-01-16T01:09:58.501] Cached successful response cache_key=4a7aae44... logger=CachingInterceptor request_id=d93d7d21-ed7b-4426-95a7-aab877d3eb13
+[I 2026-01-16T01:09:58.501] Request completed status_code=200 path= logger=root request_id=d93d7d21-ed7b-4426-95a7-aab877d3eb13
+[I 2026-01-16T01:09:58.503] 127.0.0.1 - - [16/Jan/2026 01:09:58] "POST / HTTP/1.1" 200 -
+ 98% 195/198 [09:29<00:08,  2.90s/it][I 2026-01-16T01:09:59.585] Cached successful response cache_key=e6bfa7d2... logger=CachingInterceptor request_id=61b6132e-707f-4219-850d-90f48fac0bc0
+[I 2026-01-16T01:09:59.585] Request completed status_code=200 path= logger=root request_id=61b6132e-707f-4219-850d-90f48fac0bc0
+[I 2026-01-16T01:09:59.586] 127.0.0.1 - - [16/Jan/2026 01:09:59] "POST / HTTP/1.1" 200 -
+ 99% 196/198 [09:30<00:04,  2.35s/it][I 2026-01-16T01:10:03.254] Cached successful response cache_key=5ab567a5... logger=CachingInterceptor request_id=faa3d5df-f868-48bb-80ba-11363072b946
+[I 2026-01-16T01:10:03.254] Request completed status_code=200 path= logger=root request_id=faa3d5df-f868-48bb-80ba-11363072b946
+[I 2026-01-16T01:10:03.255] 127.0.0.1 - - [16/Jan/2026 01:10:03] "POST / HTTP/1.1" 200 -
+ 99% 197/198 [09:34<00:02,  2.72s/it][I 2026-01-16T01:10:08.201]  avg_prompt_tokens=288.7 avg_total_tokens=1185.56 avg_completion_tokens=896.86 avg_latency_ms=4980.33 max_prompt_tokens=2843 max_total_tokens=3077 max_completion_tokens=2048 max_latency_ms=29224.17 count=200 successful_count=200 tool_calls_count=0 function_calls_count=0 finish_reason={'stop': 146, 'length': 54} stop_reason={} status_codes={200: 200} inference_time=562.7021305561066 run_id=0 last_request_time=1768525808.2009544 inference_run_times={0: {'run_start': 1768525193.6591904, 'first_request_time': 1768525245.498824, 'last_request_time': 1768525808.2009544, 'inference_time': 562.7021305561066}} logger=ResponseStatsInterceptor request_id=b388c1ca-92cb-41ec-982e-24054f122647
+[I 2026-01-16T01:10:09.768] Cached successful response cache_key=6c3ea8e5... logger=CachingInterceptor request_id=b388c1ca-92cb-41ec-982e-24054f122647
+[I 2026-01-16T01:10:09.768] Request completed status_code=200 path= logger=root request_id=b388c1ca-92cb-41ec-982e-24054f122647
+[I 2026-01-16T01:10:09.769] 127.0.0.1 - - [16/Jan/2026 01:10:09] "POST / HTTP/1.1" 200 -
+100% 198/198 [09:40<00:00,  3.86s/it]100% 198/198 [09:40<00:00,  2.93s/it]
+Writing report to /results/gpqa_diamond/gpqa_diamond.html
+{'score:std': np.float64(0.41573970964154905), 'score:stderr': 0.029620227874790486, 'score': np.float64(0.2222222222222222), 'task_name': 'gpqa_diamond'}
+Writing results to /results/gpqa_diamond/gpqa_diamond.json
+[I 2026-01-16T01:10:10.814] Output reading completed. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:10:10.814] Subprocess finished with return code: 0 logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:10:37.821] Generated HTML report path=/results/report.html logger=root
+[I 2026-01-16T01:10:37.840] Generated JSON report path=/results/report.json logger=root
+[I 2026-01-16T01:10:37.840] Successfully ran post-eval hook: PostEvalReportHook logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.840] Writing response statistics to metrics total_responses=200 successful_responses=200 output_dir=/results logger=ResponseStatsInterceptor
+[I 2026-01-16T01:10:37.849] Successfully ran post-eval hook: ResponseStatsInterceptor logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.849] Post-eval hooks execution completed logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.849] 127.0.0.1 - - [16/Jan/2026 01:10:37] "POST /adapterserver/run-post-hook HTTP/1.1" 200 -
+[I 2026-01-16T01:10:37.850] Successfully ran post-evaluation hooks logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.851] Received signal 15, running post-eval hooks before shutdown logger=nemo_evaluator.adapters.server
+[W 2026-01-16T01:10:37.851] Post-eval hooks have already been executed, skipping logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.851] Post-eval hooks completed successfully logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:37.851] Adapter server shutting down logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:10:39.914] Aggregated metrics runtime_seconds=697.5717813968658 inference_time_seconds=562.7021305561066 scoring_time_seconds=134.86965084075928 peak_memory_bytes=53403648 total_runs=1 logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T01:10:40.011] command: 'export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-8b-instruct
+  --eval_name gpqa_diamond --url https://integrate.api.nvidia.com/v1/chat/completions
+  --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond
+  --cache_dir /results/gpqa_diamond/cache --num_threads 4 --max_retries 5 --timeout
+  60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries
+  16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024  '
+config:
+  output_dir: /results
+  params:
+    extra: {}
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: null
+    parallelism: 4
+    request_timeout: null
+    task: null
+    temperature: 0.6
+    top_p: null
+  supported_endpoint_types: null
+  type: gpqa_diamond
+git_hash: ''
+metadata:
+  __skipped_fields: see metadata.yaml for the rest of the fields
+  versioning:
+    nemo_evaluator: 0.1.39
+    nemo_evaluator_launcher: 0.1.67
+results:
+  groups:
+    gpqa_diamond:
+      metrics:
+        score:
+          scores:
+            micro:
+              stats:
+                stddev: 0.41573970964154905
+                stderr: 0.029620227874790486
+              value: 0.2222222222222222
+  tasks:
+    gpqa_diamond:
+      metrics:
+        score:
+          scores:
+            micro:
+              stats:
+                stddev: 0.41573970964154905
+                stderr: 0.029620227874790486
+              value: 0.2222222222222222
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-8b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.evaluate
+Container completed successfully

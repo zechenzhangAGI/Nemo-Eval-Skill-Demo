@@ -18,8 +18,9 @@ evaluation:
     config:
       params:
         temperature: 0.6
-        max_new_tokens: 2048
+        max_new_tokens: 16384
         parallelism: 3
+        request_timeout: 600
         log_samples: true
   tasks:
     - name: gpqa_diamond

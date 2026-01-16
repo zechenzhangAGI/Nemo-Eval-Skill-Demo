@@ -1,0 +1,47 @@
+{
+  "response_stats": {
+    "description": "Response statistics saved during processing",
+    "avg_prompt_tokens": 277.36,
+    "avg_total_tokens": 6902.96,
+    "avg_completion_tokens": 6625.66,
+    "avg_latency_ms": 39055.62,
+    "max_prompt_tokens": 2843,
+    "max_total_tokens": 16855,
+    "max_completion_tokens": 16384,
+    "max_latency_ms": 109846.51,
+    "count": 257,
+    "successful_count": 257,
+    "tool_calls_count": 0,
+    "function_calls_count": 0,
+    "finish_reason": {
+      "stop": 158,
+      "length": 99
+    },
+    "stop_reason": {},
+    "status_codes": {
+      "200": 257
+    },
+    "inference_time": 1795.5713076591492,
+    "run_id": 0,
+    "last_request_time": 1768541269.149781,
+    "inference_run_times": {
+      "0": {
+        "run_start": "2026-01-16T04:57:44.070786",
+        "first_request_time": "2026-01-16T04:57:53.578473",
+        "last_request_time": "2026-01-16T05:27:49.149781",
+        "inference_time": 1795.5713076591492,
+        "time_to_first_request_seconds": 9.508
+      }
+    }
+  },
+  "evaluation": {
+    "runtime_seconds": 1810.4133253097534,
+    "start_time": "2026-01-16T04:57:38.%fZ",
+    "end_time": "2026-01-16T05:27:48.%fZ",
+    "peak_memory_bytes": 55689216,
+    "peak_tree_memory_bytes": 429346816,
+    "total_runs": 1,
+    "inference_time_seconds": 1795.5713076591492,
+    "scoring_time_seconds": 14.842017650604248
+  }
+}

@@ -1,0 +1,164 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T02:56:41.893] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T02:56:42.120] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: 5
+    parallelism: 3
+    request_timeout: 60
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-70b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T02:56:42.142] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T02:56:42.714] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T02:56:42.784] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T02:56:42.784] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:42.785] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T02:56:42.787] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T02:56:42.787] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:42.787] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:49.632] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T02:56:49.632] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T02:56:51.334] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T02:56:51.395] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T02:56:51.395] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:51.400] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:51.400] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:51.401] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:3825
+[I 2026-01-16T02:56:51.401] [33mPress CTRL+C to quit[0m
+[I 2026-01-16T02:56:51.600] Adapter server started on localhost:3825 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T02:56:51.612] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-70b-instruct --eval_name gpqa_diamond --url http://localhost:3825 --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 3 --max_retries 5 --timeout 60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T02:56:51.613] Temporary directory created at: /tmp/tmp15c1_eeq logger=nemo_evaluator.core.utils
+[I 2026-01-16T02:56:51.614] Script file created: /tmp/tmp15c1_eeq/0714ab0b0f571bba69113df96b07d28515d872df.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T02:56:51.614] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T02:56:51.614] Subprocess started. logger=nemo_evaluator.core.utils
+Using model: meta/llama-3.1-70b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 21.5MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 30.4MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7429.86 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s][I 2026-01-16T02:56:57.686] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a69cb369-fa0e-4ea7-be17-23ef5e0e072c
+[I 2026-01-16T02:56:57.687] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e0ea66fd-e69d-4ccd-924f-e82b5e9f513e
+[I 2026-01-16T02:56:57.688] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5a6a84a7-6985-4933-960c-30024cbae648
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T02:57:58.144] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=a3876549-332b-47ea-bdbc-d2d7b5e9dde7
+[I 2026-01-16T02:57:58.145] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=066db8a6-d458-434f-8cd3-37823e5465a8
+[I 2026-01-16T02:57:58.146] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8392d994-2dde-4c08-8074-15bbbf6d4d76
+[W 2026-01-16T02:57:58.283] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8392d994-2dde-4c08-8074-15bbbf6d4d76
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T02:59:03.150] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=58c8acad-53d0-4178-94c1-ed8c65228bf6
+[I 2026-01-16T02:59:03.151] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=70d00f1b-a6ef-46df-8eba-ed70cb4def7f
+[W 2026-01-16T02:59:03.152] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=58c8acad-53d0-4178-94c1-ed8c65228bf6
+[I 2026-01-16T02:59:03.152] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0e960041-f28c-497e-b4ff-c1d7054b133a
+[W 2026-01-16T02:59:03.153] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=70d00f1b-a6ef-46df-8eba-ed70cb4def7f
+[W 2026-01-16T02:59:03.153] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0e960041-f28c-497e-b4ff-c1d7054b133a
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+Retry attempt 3/5 due to: TimeoutError: 
+[I 2026-01-16T03:00:12.155] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=604597a7-f8b3-455a-bbff-4318792216e4
+[W 2026-01-16T03:00:12.155] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=604597a7-f8b3-455a-bbff-4318792216e4
+[I 2026-01-16T03:00:12.156] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7d5d0803-4164-4538-8a21-b81b13c4f991
+[W 2026-01-16T03:00:12.156] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7d5d0803-4164-4538-8a21-b81b13c4f991
+[I 2026-01-16T03:00:12.158] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=1eedba4b-7854-45ef-98ec-739c11a3425e
+[W 2026-01-16T03:00:12.158] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=1eedba4b-7854-45ef-98ec-739c11a3425e

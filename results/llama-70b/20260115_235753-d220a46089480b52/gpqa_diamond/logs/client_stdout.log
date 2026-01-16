@@ -1,0 +1,671 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T04:57:56.188] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T04:57:56.499] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 16384
+    max_retries: 5
+    parallelism: 3
+    request_timeout: 120
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-70b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T04:57:56.581] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T04:57:57.319] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T04:57:57.401] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T04:57:57.401] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:57:57.482] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T04:57:57.484] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T04:57:57.484] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:57:57.484] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:58:02.636] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T04:58:02.636] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T04:58:04.439] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T04:58:04.501] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T04:58:04.501] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:58:04.506] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:58:04.506] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:58:04.508] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://localhost:3826
+[I 2026-01-16T04:58:04.508] [33mPress CTRL+C to quit[0m
+[I 2026-01-16T04:58:04.685] Adapter server started on localhost:3826 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T04:58:04.698] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-70b-instruct --eval_name gpqa_diamond --url http://localhost:3826 --temperature 0.6 --top_p 1e-05 --max_tokens 16384 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 3 --max_retries 5 --timeout 120          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T04:58:04.699] Temporary directory created at: /tmp/tmp3ct30o81 logger=nemo_evaluator.core.utils
+[I 2026-01-16T04:58:04.699] Script file created: /tmp/tmp3ct30o81/f93415e3e664414c8951b6262115d68f95e79153.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T04:58:04.699] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T04:58:04.700] Subprocess started. logger=nemo_evaluator.core.utils
+Using model: meta/llama-3.1-70b-instruct, with url: http://localhost:3826, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 31.9MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 26.6MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 8016.53 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s][I 2026-01-16T04:58:10.502] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=006229f5-5e81-4afa-8028-39b3d63d37b9
+[I 2026-01-16T04:58:10.503] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0cdadcf4-5827-4ecf-9e23-c76bb379a856
+[I 2026-01-16T04:58:10.504] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=77422d43-c618-4389-9524-cb994fbd8fd7
+[I 2026-01-16T04:58:22.838] Cached successful response cache_key=f6bb198b... logger=CachingInterceptor request_id=0cdadcf4-5827-4ecf-9e23-c76bb379a856
+[I 2026-01-16T04:58:22.838] Request completed status_code=200 path= logger=root request_id=0cdadcf4-5827-4ecf-9e23-c76bb379a856
+[I 2026-01-16T04:58:22.839] 127.0.0.1 - - [16/Jan/2026 04:58:22] "POST / HTTP/1.1" 200 -
+  1% 1/198 [00:14<47:18, 14.41s/it][I 2026-01-16T04:58:22.904] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e150c0ce-e9bb-4fa0-b58d-f036fbc626aa
+[I 2026-01-16T04:58:32.753] Cached successful response cache_key=1321bf7c... logger=CachingInterceptor request_id=77422d43-c618-4389-9524-cb994fbd8fd7
+[I 2026-01-16T04:58:32.753] Request completed status_code=200 path= logger=root request_id=77422d43-c618-4389-9524-cb994fbd8fd7
+[I 2026-01-16T04:58:32.754] 127.0.0.1 - - [16/Jan/2026 04:58:32] "POST / HTTP/1.1" 200 -
+  1% 2/198 [00:24<38:23, 11.75s/it][I 2026-01-16T04:58:32.797] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9aeaa83e-735d-458f-9bc5-b650f75389e1
+[I 2026-01-16T04:58:33.726] Cached successful response cache_key=7d3b70e2... logger=CachingInterceptor request_id=e150c0ce-e9bb-4fa0-b58d-f036fbc626aa
+[I 2026-01-16T04:58:33.726] Request completed status_code=200 path= logger=root request_id=e150c0ce-e9bb-4fa0-b58d-f036fbc626aa
+[I 2026-01-16T04:58:33.727] 127.0.0.1 - - [16/Jan/2026 04:58:33] "POST / HTTP/1.1" 200 -
+  2% 3/198 [00:25<22:11,  6.83s/it][I 2026-01-16T04:58:33.770] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=b535b46f-05db-4521-8246-b8d7a667cfc7
+[W 2026-01-16T04:58:33.770] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=b535b46f-05db-4521-8246-b8d7a667cfc7
+[I 2026-01-16T04:58:54.220] Cached successful response cache_key=f93751c5... logger=CachingInterceptor request_id=b535b46f-05db-4521-8246-b8d7a667cfc7
+[I 2026-01-16T04:58:54.221] Request completed status_code=200 path= logger=root request_id=b535b46f-05db-4521-8246-b8d7a667cfc7
+[I 2026-01-16T04:58:54.222] 127.0.0.1 - - [16/Jan/2026 04:58:54] "POST / HTTP/1.1" 200 -
+  2% 4/198 [00:45<39:31, 12.23s/it][I 2026-01-16T04:58:54.267] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=74420c6f-186a-4387-8920-6e4925a4b1fa
+[W 2026-01-16T04:58:54.267] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=74420c6f-186a-4387-8920-6e4925a4b1fa
+[I 2026-01-16T04:58:56.951] Cached successful response cache_key=3a609d0b... logger=CachingInterceptor request_id=9aeaa83e-735d-458f-9bc5-b650f75389e1
+[I 2026-01-16T04:58:56.951] Request completed status_code=200 path= logger=root request_id=9aeaa83e-735d-458f-9bc5-b650f75389e1
+[I 2026-01-16T04:58:56.952] 127.0.0.1 - - [16/Jan/2026 04:58:56] "POST / HTTP/1.1" 200 -
+  3% 5/198 [00:48<28:18,  8.80s/it][I 2026-01-16T04:58:56.995] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7b8db674-2d8b-471c-ac9c-1963f5d3f6a0
+[W 2026-01-16T04:58:56.995] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7b8db674-2d8b-471c-ac9c-1963f5d3f6a0
+[I 2026-01-16T04:59:13.545] Cached successful response cache_key=b1423d0a... logger=CachingInterceptor request_id=74420c6f-186a-4387-8920-6e4925a4b1fa
+[I 2026-01-16T04:59:13.545] Request completed status_code=200 path= logger=root request_id=74420c6f-186a-4387-8920-6e4925a4b1fa
+[I 2026-01-16T04:59:13.581] 127.0.0.1 - - [16/Jan/2026 04:59:13] "POST / HTTP/1.1" 200 -
+  3% 6/198 [01:05<36:40, 11.46s/it][I 2026-01-16T04:59:13.682] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=34959a79-226a-48e3-9014-e71cb7fabf9b
+[W 2026-01-16T04:59:13.682] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=34959a79-226a-48e3-9014-e71cb7fabf9b
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:00:11.141] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0dc181fc-6ee4-40e5-b402-c6d84893215a
+[W 2026-01-16T05:00:11.141] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0dc181fc-6ee4-40e5-b402-c6d84893215a
+[I 2026-01-16T05:00:22.084] Cached successful response cache_key=df5ff3cf... logger=CachingInterceptor request_id=0dc181fc-6ee4-40e5-b402-c6d84893215a
+[I 2026-01-16T05:00:22.084] Request completed status_code=200 path= logger=root request_id=0dc181fc-6ee4-40e5-b402-c6d84893215a
+[I 2026-01-16T05:00:22.085] 127.0.0.1 - - [16/Jan/2026 05:00:22] "POST / HTTP/1.1" 200 -
+  4% 7/198 [02:13<1:35:51, 30.11s/it][I 2026-01-16T05:00:22.130] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5eb130fb-d388-41c5-9819-edd06631527a
+[W 2026-01-16T05:00:22.130] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5eb130fb-d388-41c5-9819-edd06631527a
+[I 2026-01-16T05:00:37.276] Cached successful response cache_key=f4fe85ad... logger=CachingInterceptor request_id=5eb130fb-d388-41c5-9819-edd06631527a
+[I 2026-01-16T05:00:37.276] Request completed status_code=200 path= logger=root request_id=5eb130fb-d388-41c5-9819-edd06631527a
+[I 2026-01-16T05:00:37.277] 127.0.0.1 - - [16/Jan/2026 05:00:37] "POST / HTTP/1.1" 200 -
+  4% 8/198 [02:28<1:20:18, 25.36s/it][I 2026-01-16T05:00:37.321] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ea1a56f8-2a26-4130-b558-1911d0aea849
+[W 2026-01-16T05:00:37.321] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ea1a56f8-2a26-4130-b558-1911d0aea849
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:00:59.101] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=60e12199-1e03-40fe-a28a-f01692742562
+[W 2026-01-16T05:00:59.101] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=60e12199-1e03-40fe-a28a-f01692742562
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:01:16.099] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=23140185-88aa-447b-b236-212809525b9f
+[W 2026-01-16T05:01:16.099] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=23140185-88aa-447b-b236-212809525b9f
+[I 2026-01-16T05:02:10.050] Cached successful response cache_key=80bb898c... logger=CachingInterceptor request_id=60e12199-1e03-40fe-a28a-f01692742562
+[I 2026-01-16T05:02:10.050] Request completed status_code=200 path= logger=root request_id=60e12199-1e03-40fe-a28a-f01692742562
+[I 2026-01-16T05:02:10.051] 127.0.0.1 - - [16/Jan/2026 05:02:10] "POST / HTTP/1.1" 200 -
+  5% 9/198 [04:01<2:26:16, 46.44s/it][I 2026-01-16T05:02:10.094] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7f0304e4-96a8-418f-bc6c-5ec63c65e5c5
+[W 2026-01-16T05:02:10.094] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7f0304e4-96a8-418f-bc6c-5ec63c65e5c5
+[I 2026-01-16T05:02:23.701] Cached successful response cache_key=7837bc64... logger=CachingInterceptor request_id=7f0304e4-96a8-418f-bc6c-5ec63c65e5c5
+[I 2026-01-16T05:02:23.701] Request completed status_code=200 path= logger=root request_id=7f0304e4-96a8-418f-bc6c-5ec63c65e5c5
+[I 2026-01-16T05:02:23.702] 127.0.0.1 - - [16/Jan/2026 05:02:23] "POST / HTTP/1.1" 200 -
+  5% 10/198 [04:15<1:53:47, 36.31s/it][I 2026-01-16T05:02:23.744] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0d026be8-32cf-446a-87fa-f22a7fbe3617
+[W 2026-01-16T05:02:23.745] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0d026be8-32cf-446a-87fa-f22a7fbe3617
+[I 2026-01-16T05:02:31.370] Cached successful response cache_key=a712ae31... logger=CachingInterceptor request_id=0d026be8-32cf-446a-87fa-f22a7fbe3617
+[I 2026-01-16T05:02:31.371] Request completed status_code=200 path= logger=root request_id=0d026be8-32cf-446a-87fa-f22a7fbe3617
+[I 2026-01-16T05:02:31.372] 127.0.0.1 - - [16/Jan/2026 05:02:31] "POST / HTTP/1.1" 200 -
+  6% 11/198 [04:22<1:25:54, 27.56s/it][I 2026-01-16T05:02:31.469] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3730335f-1e57-4b26-9a4f-2ce980d87a87
+[W 2026-01-16T05:02:31.469] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3730335f-1e57-4b26-9a4f-2ce980d87a87
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:02:40.092] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=802a9131-f8e9-4cd3-b98b-967711db2a8c
+[W 2026-01-16T05:02:40.092] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=802a9131-f8e9-4cd3-b98b-967711db2a8c
+[I 2026-01-16T05:02:47.959] Cached successful response cache_key=df5ff3cf... logger=CachingInterceptor request_id=006229f5-5e81-4afa-8028-39b3d63d37b9
+[I 2026-01-16T05:02:47.959] Request completed status_code=200 path= logger=root request_id=006229f5-5e81-4afa-8028-39b3d63d37b9
+[I 2026-01-16T05:02:47.960] 127.0.0.1 - - [16/Jan/2026 05:02:47] "POST / HTTP/1.1" 200 -
+[I 2026-01-16T05:02:51.137] Cached successful response cache_key=83a8679b... logger=CachingInterceptor request_id=802a9131-f8e9-4cd3-b98b-967711db2a8c
+[I 2026-01-16T05:02:51.137] Request completed status_code=200 path= logger=root request_id=802a9131-f8e9-4cd3-b98b-967711db2a8c
+[I 2026-01-16T05:02:51.138] 127.0.0.1 - - [16/Jan/2026 05:02:51] "POST / HTTP/1.1" 200 -
+  6% 12/198 [04:42<1:18:02, 25.18s/it][I 2026-01-16T05:02:51.180] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f64a0284-bfbc-4de8-8ba3-d1ecaac3eca3
+[W 2026-01-16T05:02:51.181] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f64a0284-bfbc-4de8-8ba3-d1ecaac3eca3
+[I 2026-01-16T05:03:04.541] Cached successful response cache_key=15bd0633... logger=CachingInterceptor request_id=f64a0284-bfbc-4de8-8ba3-d1ecaac3eca3
+[I 2026-01-16T05:03:04.541] Request completed status_code=200 path= logger=root request_id=f64a0284-bfbc-4de8-8ba3-d1ecaac3eca3
+[I 2026-01-16T05:03:04.542] 127.0.0.1 - - [16/Jan/2026 05:03:04] "POST / HTTP/1.1" 200 -
+  7% 13/198 [04:56<1:06:37, 21.61s/it][I 2026-01-16T05:03:04.583] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ca85e1cc-b08e-4ea8-b4ff-e422b2322633
+[W 2026-01-16T05:03:04.583] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ca85e1cc-b08e-4ea8-b4ff-e422b2322633
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T05:03:21.100] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5f093eb9-3bca-4dbc-9618-2bfa6ce6e3fd
+[W 2026-01-16T05:03:21.100] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5f093eb9-3bca-4dbc-9618-2bfa6ce6e3fd
+[I 2026-01-16T05:03:25.388] Cached successful response cache_key=55c14816... logger=CachingInterceptor request_id=ca85e1cc-b08e-4ea8-b4ff-e422b2322633
+[I 2026-01-16T05:03:25.388] Request completed status_code=200 path= logger=root request_id=ca85e1cc-b08e-4ea8-b4ff-e422b2322633
+[I 2026-01-16T05:03:25.389] 127.0.0.1 - - [16/Jan/2026 05:03:25] "POST / HTTP/1.1" 200 -
+  7% 14/198 [05:16<1:05:33, 21.38s/it][I 2026-01-16T05:03:25.433] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=593d7bc3-aeac-4ec6-93ae-7f92bfbe8f06
+[W 2026-01-16T05:03:25.434] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=593d7bc3-aeac-4ec6-93ae-7f92bfbe8f06
+[I 2026-01-16T05:03:39.899] Cached successful response cache_key=dd57bfcd... logger=CachingInterceptor request_id=5f093eb9-3bca-4dbc-9618-2bfa6ce6e3fd
+[I 2026-01-16T05:03:39.899] Request completed status_code=200 path= logger=root request_id=5f093eb9-3bca-4dbc-9618-2bfa6ce6e3fd
+[I 2026-01-16T05:03:39.900] 127.0.0.1 - - [16/Jan/2026 05:03:39] "POST / HTTP/1.1" 200 -
+  8% 15/198 [05:31<58:53, 19.31s/it]  [I 2026-01-16T05:03:39.942] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7cd74e16-c3a3-421a-bcca-b1dd6aadcf1d
+[W 2026-01-16T05:03:39.942] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7cd74e16-c3a3-421a-bcca-b1dd6aadcf1d
+[I 2026-01-16T05:03:43.690] Cached successful response cache_key=6c3bb72b... logger=CachingInterceptor request_id=593d7bc3-aeac-4ec6-93ae-7f92bfbe8f06
+[I 2026-01-16T05:03:43.690] Request completed status_code=200 path= logger=root request_id=593d7bc3-aeac-4ec6-93ae-7f92bfbe8f06
+[I 2026-01-16T05:03:43.691] 127.0.0.1 - - [16/Jan/2026 05:03:43] "POST / HTTP/1.1" 200 -
+  8% 16/198 [05:35<44:24, 14.64s/it][I 2026-01-16T05:03:43.735] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=122e4138-ec9c-4191-a351-0d1e7d76dc3b
+[W 2026-01-16T05:03:43.735] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=122e4138-ec9c-4191-a351-0d1e7d76dc3b
+[I 2026-01-16T05:03:53.567] Cached successful response cache_key=0562203f... logger=CachingInterceptor request_id=7cd74e16-c3a3-421a-bcca-b1dd6aadcf1d
+[I 2026-01-16T05:03:53.567] Request completed status_code=200 path= logger=root request_id=7cd74e16-c3a3-421a-bcca-b1dd6aadcf1d
+[I 2026-01-16T05:03:53.568] 127.0.0.1 - - [16/Jan/2026 05:03:53] "POST / HTTP/1.1" 200 -
+  9% 17/198 [05:45<39:50, 13.21s/it][I 2026-01-16T05:03:53.609] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9819c33b-f6d1-4c27-aae2-f354d4f2b834
+[W 2026-01-16T05:03:53.609] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9819c33b-f6d1-4c27-aae2-f354d4f2b834
+[I 2026-01-16T05:03:58.488] Cached successful response cache_key=50fdc0c6... logger=CachingInterceptor request_id=122e4138-ec9c-4191-a351-0d1e7d76dc3b
+[I 2026-01-16T05:03:58.488] Request completed status_code=200 path= logger=root request_id=122e4138-ec9c-4191-a351-0d1e7d76dc3b
+[I 2026-01-16T05:03:58.489] 127.0.0.1 - - [16/Jan/2026 05:03:58] "POST / HTTP/1.1" 200 -
+  9% 18/198 [05:50<32:09, 10.72s/it][I 2026-01-16T05:03:58.531] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7c9087b6-a804-44d9-ab50-fa991db08548
+[W 2026-01-16T05:03:58.531] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7c9087b6-a804-44d9-ab50-fa991db08548
+[W 2026-01-16T05:03:59.135] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=7b8db674-2d8b-471c-ac9c-1963f5d3f6a0
+[I 2026-01-16T05:03:59.248] Request completed status_code=504 path= logger=root request_id=7b8db674-2d8b-471c-ac9c-1963f5d3f6a0
+[I 2026-01-16T05:03:59.249] 127.0.0.1 - - [16/Jan/2026 05:03:59] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:04:06.983] Cached successful response cache_key=e59cdc1f... logger=CachingInterceptor request_id=9819c33b-f6d1-4c27-aae2-f354d4f2b834
+[I 2026-01-16T05:04:06.983] Request completed status_code=200 path= logger=root request_id=9819c33b-f6d1-4c27-aae2-f354d4f2b834
+[I 2026-01-16T05:04:06.984] 127.0.0.1 - - [16/Jan/2026 05:04:06] "POST / HTTP/1.1" 200 -
+ 10% 19/198 [05:58<29:58, 10.05s/it][I 2026-01-16T05:04:07.026] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=fd4fa402-a3e3-4d1b-92fe-00e114a04440
+[W 2026-01-16T05:04:07.026] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=fd4fa402-a3e3-4d1b-92fe-00e114a04440
+[W 2026-01-16T05:04:15.920] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=34959a79-226a-48e3-9014-e71cb7fabf9b
+[I 2026-01-16T05:04:16.036] Request completed status_code=504 path= logger=root request_id=34959a79-226a-48e3-9014-e71cb7fabf9b
+[I 2026-01-16T05:04:16.037] 127.0.0.1 - - [16/Jan/2026 05:04:16] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:04:22.202] Cached successful response cache_key=c505d6b1... logger=CachingInterceptor request_id=fd4fa402-a3e3-4d1b-92fe-00e114a04440
+[I 2026-01-16T05:04:22.202] Request completed status_code=200 path= logger=root request_id=fd4fa402-a3e3-4d1b-92fe-00e114a04440
+[I 2026-01-16T05:04:22.203] 127.0.0.1 - - [16/Jan/2026 05:04:22] "POST / HTTP/1.1" 200 -
+ 10% 20/198 [06:13<34:25, 11.60s/it][I 2026-01-16T05:04:22.282] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0bc95b30-d872-452b-8c2a-b9eb641910b9
+[W 2026-01-16T05:04:22.282] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0bc95b30-d872-452b-8c2a-b9eb641910b9
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:04:34.094] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e27c8c49-0d10-433e-a822-bdce38738860
+[W 2026-01-16T05:04:34.095] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=e27c8c49-0d10-433e-a822-bdce38738860
+[I 2026-01-16T05:04:34.237] Cached successful response cache_key=66f24b6b... logger=CachingInterceptor request_id=0bc95b30-d872-452b-8c2a-b9eb641910b9
+[I 2026-01-16T05:04:34.237] Request completed status_code=200 path= logger=root request_id=0bc95b30-d872-452b-8c2a-b9eb641910b9
+[I 2026-01-16T05:04:34.239] 127.0.0.1 - - [16/Jan/2026 05:04:34] "POST / HTTP/1.1" 200 -
+ 11% 21/198 [06:25<34:36, 11.73s/it][I 2026-01-16T05:04:34.284] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8814a008-85c3-46f9-bee4-822d1255b358
+[W 2026-01-16T05:04:34.284] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8814a008-85c3-46f9-bee4-822d1255b358
+[I 2026-01-16T05:04:48.016] Cached successful response cache_key=c0151c74... logger=CachingInterceptor request_id=8814a008-85c3-46f9-bee4-822d1255b358
+[I 2026-01-16T05:04:48.016] Request completed status_code=200 path= logger=root request_id=8814a008-85c3-46f9-bee4-822d1255b358
+[I 2026-01-16T05:04:48.017] 127.0.0.1 - - [16/Jan/2026 05:04:48] "POST / HTTP/1.1" 200 -
+ 11% 22/198 [06:39<36:12, 12.35s/it][I 2026-01-16T05:04:48.060] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=9f79189e-59bc-4148-aba7-f263184f4f41
+[W 2026-01-16T05:04:48.060] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=9f79189e-59bc-4148-aba7-f263184f4f41
+[I 2026-01-16T05:05:01.660] Cached successful response cache_key=0e81d3a8... logger=CachingInterceptor request_id=9f79189e-59bc-4148-aba7-f263184f4f41
+[I 2026-01-16T05:05:01.661] Request completed status_code=200 path= logger=root request_id=9f79189e-59bc-4148-aba7-f263184f4f41
+[I 2026-01-16T05:05:01.662] 127.0.0.1 - - [16/Jan/2026 05:05:01] "POST / HTTP/1.1" 200 -
+ 12% 23/198 [06:53<37:08, 12.74s/it][I 2026-01-16T05:05:01.704] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3f3326c2-285e-43cd-9786-b5d24f0911a7
+[W 2026-01-16T05:05:01.704] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3f3326c2-285e-43cd-9786-b5d24f0911a7
+[I 2026-01-16T05:05:19.998] Cached successful response cache_key=b589bba2... logger=CachingInterceptor request_id=e27c8c49-0d10-433e-a822-bdce38738860
+[I 2026-01-16T05:05:19.998] Request completed status_code=200 path= logger=root request_id=e27c8c49-0d10-433e-a822-bdce38738860
+[I 2026-01-16T05:05:19.999] 127.0.0.1 - - [16/Jan/2026 05:05:19] "POST / HTTP/1.1" 200 -
+ 12% 24/198 [07:11<41:48, 14.42s/it][I 2026-01-16T05:05:20.040] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=380c8920-b40f-48ca-a5d5-79c83608af14
+[W 2026-01-16T05:05:20.040] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=380c8920-b40f-48ca-a5d5-79c83608af14
+[I 2026-01-16T05:05:29.054] Cached successful response cache_key=7ceda439... logger=CachingInterceptor request_id=3f3326c2-285e-43cd-9786-b5d24f0911a7
+[I 2026-01-16T05:05:29.054] Request completed status_code=200 path= logger=root request_id=3f3326c2-285e-43cd-9786-b5d24f0911a7
+[I 2026-01-16T05:05:29.055] 127.0.0.1 - - [16/Jan/2026 05:05:29] "POST / HTTP/1.1" 200 -
+ 13% 25/198 [07:20<36:55, 12.81s/it][I 2026-01-16T05:05:29.100] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=c702d79e-e413-41d4-8af7-36b228046808
+[W 2026-01-16T05:05:29.100] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=c702d79e-e413-41d4-8af7-36b228046808
+[W 2026-01-16T05:05:39.454] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=ea1a56f8-2a26-4130-b558-1911d0aea849
+[I 2026-01-16T05:05:39.569] Request completed status_code=504 path= logger=root request_id=ea1a56f8-2a26-4130-b558-1911d0aea849
+[I 2026-01-16T05:05:39.570] 127.0.0.1 - - [16/Jan/2026 05:05:39] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:05:42.506] Cached successful response cache_key=4d5330d0... logger=CachingInterceptor request_id=c702d79e-e413-41d4-8af7-36b228046808
+[I 2026-01-16T05:05:42.506] Request completed status_code=200 path= logger=root request_id=c702d79e-e413-41d4-8af7-36b228046808
+[I 2026-01-16T05:05:42.507] 127.0.0.1 - - [16/Jan/2026 05:05:42] "POST / HTTP/1.1" 200 -
+ 13% 26/198 [07:34<37:16, 13.00s/it][I 2026-01-16T05:05:42.553] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=871f972f-ca34-4dd2-9438-2d2049d8e4db
+[W 2026-01-16T05:05:42.553] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=871f972f-ca34-4dd2-9438-2d2049d8e4db
+[I 2026-01-16T05:05:43.191] Cached successful response cache_key=b01c6f10... logger=CachingInterceptor request_id=380c8920-b40f-48ca-a5d5-79c83608af14
+[I 2026-01-16T05:05:43.191] Request completed status_code=200 path= logger=root request_id=380c8920-b40f-48ca-a5d5-79c83608af14
+[I 2026-01-16T05:05:43.192] 127.0.0.1 - - [16/Jan/2026 05:05:43] "POST / HTTP/1.1" 200 -
+ 14% 27/198 [07:34<26:31,  9.31s/it][I 2026-01-16T05:05:43.234] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7f4575f4-ab06-46e8-946e-0d0a002c606b
+[W 2026-01-16T05:05:43.234] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7f4575f4-ab06-46e8-946e-0d0a002c606b
+[I 2026-01-16T05:05:58.760] Cached successful response cache_key=4d65e021... logger=CachingInterceptor request_id=871f972f-ca34-4dd2-9438-2d2049d8e4db
+[I 2026-01-16T05:05:58.760] Request completed status_code=200 path= logger=root request_id=871f972f-ca34-4dd2-9438-2d2049d8e4db
+[I 2026-01-16T05:05:58.761] 127.0.0.1 - - [16/Jan/2026 05:05:58] "POST / HTTP/1.1" 200 -
+ 14% 28/198 [07:50<31:41, 11.18s/it][I 2026-01-16T05:05:58.802] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=245d11a6-a944-4dc6-b735-f807e1ec59c4
+[W 2026-01-16T05:05:58.803] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=245d11a6-a944-4dc6-b735-f807e1ec59c4
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:06:01.085] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5dfb868e-93e4-4b2c-9c03-fc12b0751f40
+[W 2026-01-16T05:06:01.085] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5dfb868e-93e4-4b2c-9c03-fc12b0751f40
+[I 2026-01-16T05:06:01.812] Cached successful response cache_key=9384b766... logger=CachingInterceptor request_id=7f4575f4-ab06-46e8-946e-0d0a002c606b
+[I 2026-01-16T05:06:01.812] Request completed status_code=200 path= logger=root request_id=7f4575f4-ab06-46e8-946e-0d0a002c606b
+[I 2026-01-16T05:06:01.813] 127.0.0.1 - - [16/Jan/2026 05:06:01] "POST / HTTP/1.1" 200 -
+ 15% 29/198 [07:53<24:38,  8.75s/it][I 2026-01-16T05:06:01.858] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=0ec62ce2-ebda-4916-8951-e4b1f8d876ec
+[W 2026-01-16T05:06:01.858] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=0ec62ce2-ebda-4916-8951-e4b1f8d876ec
+[I 2026-01-16T05:06:17.505] Cached successful response cache_key=3417d215... logger=CachingInterceptor request_id=0ec62ce2-ebda-4916-8951-e4b1f8d876ec
+[I 2026-01-16T05:06:17.505] Request completed status_code=200 path= logger=root request_id=0ec62ce2-ebda-4916-8951-e4b1f8d876ec
+[I 2026-01-16T05:06:17.506] 127.0.0.1 - - [16/Jan/2026 05:06:17] "POST / HTTP/1.1" 200 -
+ 15% 30/198 [08:09<30:19, 10.83s/it][I 2026-01-16T05:06:17.549] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=e6925c15-f044-4fbd-ad34-383a48e25ec5
+[W 2026-01-16T05:06:17.549] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=e6925c15-f044-4fbd-ad34-383a48e25ec5
+[W 2026-01-16T05:06:18.244] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=23140185-88aa-447b-b236-212809525b9f
+[I 2026-01-16T05:06:18.357] Request completed status_code=504 path= logger=root request_id=23140185-88aa-447b-b236-212809525b9f
+[I 2026-01-16T05:06:18.358] 127.0.0.1 - - [16/Jan/2026 05:06:18] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:06:25.739] Cached successful response cache_key=a226068c... logger=CachingInterceptor request_id=245d11a6-a944-4dc6-b735-f807e1ec59c4
+[I 2026-01-16T05:06:25.739] Request completed status_code=200 path= logger=root request_id=245d11a6-a944-4dc6-b735-f807e1ec59c4
+[I 2026-01-16T05:06:25.740] 127.0.0.1 - - [16/Jan/2026 05:06:25] "POST / HTTP/1.1" 200 -
+ 16% 31/198 [08:17<27:58, 10.05s/it][I 2026-01-16T05:06:25.784] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f334b529-ea42-4aba-9652-b0208552e734
+[W 2026-01-16T05:06:25.785] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f334b529-ea42-4aba-9652-b0208552e734
+[I 2026-01-16T05:06:29.455] Cached successful response cache_key=3e54f246... logger=CachingInterceptor request_id=e6925c15-f044-4fbd-ad34-383a48e25ec5
+[I 2026-01-16T05:06:29.455] Request completed status_code=200 path= logger=root request_id=e6925c15-f044-4fbd-ad34-383a48e25ec5
+[I 2026-01-16T05:06:29.456] 127.0.0.1 - - [16/Jan/2026 05:06:29] "POST / HTTP/1.1" 200 -
+ 16% 32/198 [08:21<22:32,  8.15s/it][I 2026-01-16T05:06:29.498] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=304ed1e9-f9f4-4385-82cd-843f6e06e228
+[W 2026-01-16T05:06:29.498] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=304ed1e9-f9f4-4385-82cd-843f6e06e228
+[I 2026-01-16T05:06:37.005] Cached successful response cache_key=9963c1ad... logger=CachingInterceptor request_id=f334b529-ea42-4aba-9652-b0208552e734
+[I 2026-01-16T05:06:37.005] Request completed status_code=200 path= logger=root request_id=f334b529-ea42-4aba-9652-b0208552e734
+[I 2026-01-16T05:06:37.007] 127.0.0.1 - - [16/Jan/2026 05:06:37] "POST / HTTP/1.1" 200 -
+ 17% 33/198 [08:28<21:55,  7.97s/it][I 2026-01-16T05:06:37.048] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5aa79bb4-158b-4155-a8e3-e31b6330704e
+[W 2026-01-16T05:06:37.048] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5aa79bb4-158b-4155-a8e3-e31b6330704e
+[I 2026-01-16T05:06:50.720] Cached successful response cache_key=d02e0210... logger=CachingInterceptor request_id=5aa79bb4-158b-4155-a8e3-e31b6330704e
+[I 2026-01-16T05:06:50.720] Request completed status_code=200 path= logger=root request_id=5aa79bb4-158b-4155-a8e3-e31b6330704e
+[I 2026-01-16T05:06:50.721] 127.0.0.1 - - [16/Jan/2026 05:06:50] "POST / HTTP/1.1" 200 -
+ 17% 34/198 [08:42<26:29,  9.69s/it][I 2026-01-16T05:06:50.763] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=784325bf-76cb-41c3-b128-e6600dd6fc8c
+[W 2026-01-16T05:06:50.764] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=784325bf-76cb-41c3-b128-e6600dd6fc8c
+[I 2026-01-16T05:07:28.897] Cached successful response cache_key=3f2318ca... logger=CachingInterceptor request_id=784325bf-76cb-41c3-b128-e6600dd6fc8c
+[I 2026-01-16T05:07:28.897] Request completed status_code=200 path= logger=root request_id=784325bf-76cb-41c3-b128-e6600dd6fc8c
+[I 2026-01-16T05:07:28.898] 127.0.0.1 - - [16/Jan/2026 05:07:28] "POST / HTTP/1.1" 200 -
+ 18% 35/198 [09:20<49:32, 18.24s/it][I 2026-01-16T05:07:28.943] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=cfbd157c-2b08-4c7b-96d6-c7367ae4aaeb
+[W 2026-01-16T05:07:28.943] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=cfbd157c-2b08-4c7b-96d6-c7367ae4aaeb
+[W 2026-01-16T05:07:33.594] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=3730335f-1e57-4b26-9a4f-2ce980d87a87
+[I 2026-01-16T05:07:33.709] Request completed status_code=504 path= logger=root request_id=3730335f-1e57-4b26-9a4f-2ce980d87a87
+[I 2026-01-16T05:07:33.710] 127.0.0.1 - - [16/Jan/2026 05:07:33] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:07:44.447] Cached successful response cache_key=5644fca4... logger=CachingInterceptor request_id=cfbd157c-2b08-4c7b-96d6-c7367ae4aaeb
+[I 2026-01-16T05:07:44.447] Request completed status_code=200 path= logger=root request_id=cfbd157c-2b08-4c7b-96d6-c7367ae4aaeb
+[I 2026-01-16T05:07:44.448] 127.0.0.1 - - [16/Jan/2026 05:07:44] "POST / HTTP/1.1" 200 -
+ 18% 36/198 [09:36<47:05, 17.44s/it][I 2026-01-16T05:07:44.515] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=2149a777-c4e6-41c2-8697-23323697eb77
+[W 2026-01-16T05:07:44.515] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=2149a777-c4e6-41c2-8697-23323697eb77
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T05:08:06.105] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=ac95f72f-5140-4489-9ee4-7d66ef5f416c
+[W 2026-01-16T05:08:06.105] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=ac95f72f-5140-4489-9ee4-7d66ef5f416c
+[I 2026-01-16T05:08:13.000] Cached successful response cache_key=f018434b... logger=CachingInterceptor request_id=2149a777-c4e6-41c2-8697-23323697eb77
+[I 2026-01-16T05:08:13.000] Request completed status_code=200 path= logger=root request_id=2149a777-c4e6-41c2-8697-23323697eb77
+[I 2026-01-16T05:08:13.082] 127.0.0.1 - - [16/Jan/2026 05:08:13] "POST / HTTP/1.1" 200 -
+ 19% 37/198 [10:04<55:47, 20.79s/it][I 2026-01-16T05:08:13.183] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6ad9ce30-8830-4c0d-9142-2381f31ce7b9
+[W 2026-01-16T05:08:13.183] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6ad9ce30-8830-4c0d-9142-2381f31ce7b9
+[I 2026-01-16T05:08:27.353] Cached successful response cache_key=62788de3... logger=CachingInterceptor request_id=6ad9ce30-8830-4c0d-9142-2381f31ce7b9
+[I 2026-01-16T05:08:27.353] Request completed status_code=200 path= logger=root request_id=6ad9ce30-8830-4c0d-9142-2381f31ce7b9
+[I 2026-01-16T05:08:27.354] 127.0.0.1 - - [16/Jan/2026 05:08:27] "POST / HTTP/1.1" 200 -
+ 19% 38/198 [10:18<50:13, 18.84s/it][I 2026-01-16T05:08:27.400] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=769fdf1c-8e14-43a8-b6de-9fdd61f35562
+[W 2026-01-16T05:08:27.400] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=769fdf1c-8e14-43a8-b6de-9fdd61f35562
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:08:32.088] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3885407b-d353-48f7-ae26-f0d1d96d38b4
+[W 2026-01-16T05:08:32.088] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3885407b-d353-48f7-ae26-f0d1d96d38b4
+[I 2026-01-16T05:08:44.250] Cached successful response cache_key=457c28c6... logger=CachingInterceptor request_id=769fdf1c-8e14-43a8-b6de-9fdd61f35562
+[I 2026-01-16T05:08:44.250] Request completed status_code=200 path= logger=root request_id=769fdf1c-8e14-43a8-b6de-9fdd61f35562
+[I 2026-01-16T05:08:44.251] 127.0.0.1 - - [16/Jan/2026 05:08:44] "POST / HTTP/1.1" 200 -
+ 20% 39/198 [10:35<48:22, 18.25s/it][I 2026-01-16T05:08:44.297] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=6c9c4687-7433-47d7-93fa-58c4a52402eb
+[W 2026-01-16T05:08:44.298] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=6c9c4687-7433-47d7-93fa-58c4a52402eb
+[I 2026-01-16T05:08:49.948] Cached successful response cache_key=46a4588a... logger=CachingInterceptor request_id=6c9c4687-7433-47d7-93fa-58c4a52402eb
+[I 2026-01-16T05:08:49.948] Request completed status_code=200 path= logger=root request_id=6c9c4687-7433-47d7-93fa-58c4a52402eb
+[I 2026-01-16T05:08:49.949] 127.0.0.1 - - [16/Jan/2026 05:08:49] "POST / HTTP/1.1" 200 -
+ 20% 40/198 [10:41<38:09, 14.49s/it][I 2026-01-16T05:08:49.995] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8e2f389b-b1b2-4d62-bcb8-e605fe4da965
+[W 2026-01-16T05:08:49.995] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8e2f389b-b1b2-4d62-bcb8-e605fe4da965
+[I 2026-01-16T05:08:56.910] Cached successful response cache_key=482a8406... logger=CachingInterceptor request_id=3885407b-d353-48f7-ae26-f0d1d96d38b4
+[I 2026-01-16T05:08:56.911] Request completed status_code=200 path= logger=root request_id=3885407b-d353-48f7-ae26-f0d1d96d38b4
+[I 2026-01-16T05:08:56.911] 127.0.0.1 - - [16/Jan/2026 05:08:56] "POST / HTTP/1.1" 200 -
+ 21% 41/198 [10:48<32:00, 12.23s/it][I 2026-01-16T05:08:56.958] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=bfc647ea-d3bb-43df-ae19-38ffd5a5f3ae
+[W 2026-01-16T05:08:56.958] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=bfc647ea-d3bb-43df-ae19-38ffd5a5f3ae
+[W 2026-01-16T05:09:00.659] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=7c9087b6-a804-44d9-ab50-fa991db08548
+[I 2026-01-16T05:09:00.773] Request completed status_code=504 path= logger=root request_id=7c9087b6-a804-44d9-ab50-fa991db08548
+[I 2026-01-16T05:09:00.774] 127.0.0.1 - - [16/Jan/2026 05:09:00] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+[I 2026-01-16T05:09:08.213] Cached successful response cache_key=ae9f3f41... logger=CachingInterceptor request_id=bfc647ea-d3bb-43df-ae19-38ffd5a5f3ae
+[I 2026-01-16T05:09:08.214] Request completed status_code=200 path= logger=root request_id=bfc647ea-d3bb-43df-ae19-38ffd5a5f3ae
+[I 2026-01-16T05:09:08.215] 127.0.0.1 - - [16/Jan/2026 05:09:08] "POST / HTTP/1.1" 200 -
+ 21% 42/198 [10:59<31:04, 11.95s/it][I 2026-01-16T05:09:08.257] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=69cb4529-5843-407c-97d4-52cfab77c175
+[W 2026-01-16T05:09:08.258] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=69cb4529-5843-407c-97d4-52cfab77c175
+[I 2026-01-16T05:09:21.464] Cached successful response cache_key=bf4d492b... logger=CachingInterceptor request_id=8e2f389b-b1b2-4d62-bcb8-e605fe4da965
+[I 2026-01-16T05:09:21.464] Request completed status_code=200 path= logger=root request_id=8e2f389b-b1b2-4d62-bcb8-e605fe4da965
+[I 2026-01-16T05:09:21.466] 127.0.0.1 - - [16/Jan/2026 05:09:21] "POST / HTTP/1.1" 200 -
+ 22% 43/198 [11:13<31:52, 12.34s/it][I 2026-01-16T05:09:21.508] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=4aa560f8-c943-45f4-98ef-317064d06199
+[W 2026-01-16T05:09:21.509] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=4aa560f8-c943-45f4-98ef-317064d06199
+[I 2026-01-16T05:09:47.555] Cached successful response cache_key=b027ca9d... logger=CachingInterceptor request_id=4aa560f8-c943-45f4-98ef-317064d06199
+[I 2026-01-16T05:09:47.555] Request completed status_code=200 path= logger=root request_id=4aa560f8-c943-45f4-98ef-317064d06199
+[I 2026-01-16T05:09:47.556] 127.0.0.1 - - [16/Jan/2026 05:09:47] "POST / HTTP/1.1" 200 -
+ 22% 44/198 [11:39<42:15, 16.47s/it][I 2026-01-16T05:09:47.599] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=817229fa-e351-460e-ad5a-fb11f7f45905
+[W 2026-01-16T05:09:47.599] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=817229fa-e351-460e-ad5a-fb11f7f45905
+Retry attempt 3/5 due to: TimeoutError: 
+[I 2026-01-16T05:10:15.108] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=7073175d-b4ba-4716-b408-afbc9ab438b7
+[W 2026-01-16T05:10:15.109] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=7073175d-b4ba-4716-b408-afbc9ab438b7
+[I 2026-01-16T05:10:24.654] Cached successful response cache_key=d333ec59... logger=CachingInterceptor request_id=817229fa-e351-460e-ad5a-fb11f7f45905
+[I 2026-01-16T05:10:24.654] Request completed status_code=200 path= logger=root request_id=817229fa-e351-460e-ad5a-fb11f7f45905
+[I 2026-01-16T05:10:24.655] 127.0.0.1 - - [16/Jan/2026 05:10:24] "POST / HTTP/1.1" 200 -
+ 23% 45/198 [12:16<57:46, 22.66s/it][I 2026-01-16T05:10:24.702] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=52b8f7ce-5c57-428c-8e02-63a179549052
+[W 2026-01-16T05:10:24.702] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=52b8f7ce-5c57-428c-8e02-63a179549052
+[W 2026-01-16T05:11:03.211] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=5dfb868e-93e4-4b2c-9c03-fc12b0751f40
+[I 2026-01-16T05:11:03.326] Request completed status_code=504 path= logger=root request_id=5dfb868e-93e4-4b2c-9c03-fc12b0751f40
+[I 2026-01-16T05:11:03.327] 127.0.0.1 - - [16/Jan/2026 05:11:03] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:11:11.128] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=8c2ff79a-7c43-4baf-9560-3f2ace7e4bda
+[W 2026-01-16T05:11:11.129] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=8c2ff79a-7c43-4baf-9560-3f2ace7e4bda
+[W 2026-01-16T05:11:31.631] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=304ed1e9-f9f4-4385-82cd-843f6e06e228
+[I 2026-01-16T05:11:31.749] Request completed status_code=504 path= logger=root request_id=304ed1e9-f9f4-4385-82cd-843f6e06e228
+[I 2026-01-16T05:11:31.750] 127.0.0.1 - - [16/Jan/2026 05:11:31] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+[I 2026-01-16T05:12:27.093] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=f2753b4a-ef41-472f-8a91-fea9f2fe1847
+[W 2026-01-16T05:12:27.094] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=f2753b4a-ef41-472f-8a91-fea9f2fe1847
+[I 2026-01-16T05:12:32.154] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=baf1cafe-1cf8-49ce-89a6-d5bc652d1772
+[W 2026-01-16T05:12:32.154] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=baf1cafe-1cf8-49ce-89a6-d5bc652d1772
+[W 2026-01-16T05:13:08.221] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=ac95f72f-5140-4489-9ee4-7d66ef5f416c
+[I 2026-01-16T05:13:08.331] Request completed status_code=504 path= logger=root request_id=ac95f72f-5140-4489-9ee4-7d66ef5f416c
+[I 2026-01-16T05:13:08.333] 127.0.0.1 - - [16/Jan/2026 05:13:08] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T05:13:16.183] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=3edc4f0e-217a-4825-8125-e07ef0aa9bef
+[W 2026-01-16T05:13:16.183] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=3edc4f0e-217a-4825-8125-e07ef0aa9bef
+[W 2026-01-16T05:14:10.402] Error parsing response body for token counting: Expecting value: line 1 column 1 (char 0) logger=ResponseStatsInterceptor request_id=69cb4529-5843-407c-97d4-52cfab77c175
+[I 2026-01-16T05:14:10.528] Request completed status_code=504 path= logger=root request_id=69cb4529-5843-407c-97d4-52cfab77c175
+[I 2026-01-16T05:14:10.529] 127.0.0.1 - - [16/Jan/2026 05:14:10] "[35m[1mPOST / HTTP/1.1[0m" 504 -
+Retry attempt 2/5 due to: TimeoutError: 
+[I 2026-01-16T05:14:32.184] Request started path= method=POST url=https://integrate.api.nvidia.com/v1/chat/completions logger=root request_id=5246022f-dea4-45ac-9f08-56d991c5393d
+[W 2026-01-16T05:14:32.184] Maximum cached requests limit reached max_saved_requests=5 logger=CachingInterceptor request_id=5246022f-dea4-45ac-9f08-56d991c5393d
+Retry attempt 5/5 due to: TimeoutError: 
+ 23% 45/198 [16:24<55:47, 21.88s/it]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x1454fae1e1b0 state=finished raised TimeoutError>]
+[I 2026-01-16T05:14:33.889] Output reading completed. logger=nemo_evaluator.core.utils
+[I 2026-01-16T05:14:33.889] Subprocess finished with return code: 1 logger=nemo_evaluator.core.utils
+[I 2026-01-16T05:14:37.623] Generated HTML report path=/results/report.html logger=root
+[I 2026-01-16T05:14:37.633] Generated JSON report path=/results/report.json logger=root
+[I 2026-01-16T05:14:37.633] Successfully ran post-eval hook: PostEvalReportHook logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.633] Writing response statistics to metrics total_responses=56 successful_responses=46 output_dir=/results logger=ResponseStatsInterceptor
+[I 2026-01-16T05:14:37.639] Successfully ran post-eval hook: ResponseStatsInterceptor logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.639] Post-eval hooks execution completed logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.640] 127.0.0.1 - - [16/Jan/2026 05:14:37] "POST /adapterserver/run-post-hook HTTP/1.1" 200 -
+[I 2026-01-16T05:14:37.641] Successfully ran post-evaluation hooks logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.641] Received signal 15, running post-eval hooks before shutdown logger=nemo_evaluator.adapters.server
+[W 2026-01-16T05:14:37.641] Post-eval hooks have already been executed, skipping logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.641] Post-eval hooks completed successfully logger=nemo_evaluator.adapters.server
+[I 2026-01-16T05:14:37.641] Adapter server shutting down logger=nemo_evaluator.adapters.server
+Traceback (most recent call last):
+  File "/opt/venv/bin/nemo-evaluator", line 7, in <module>
+    sys.exit(run_eval())
+             ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 208, in run_eval
+    run(args)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 170, in run
+    evaluate(eval_cfg=eval_cfg, target_cfg=target_cfg, metadata=metadata_cfg)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 137, in evaluate
+    evaluation_result, metrics = monitor_memory_usage(
+                                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/resources.py", line 279, in monitor_memory_usage
+    ret = func(*args, **func_kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 112, in run_evaluation_core
+    run_command(cmd, verbose=True, propagate_errors=True)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/utils.py", line 171, in run_command
+    raise RuntimeError(
+RuntimeError: Evaluation failed! Please consult the logs below:
+Using model: meta/llama-3.1-70b-instruct, with url: http://localhost:3826, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 31.9MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 26.6MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 8016.53 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s]  1% 1/198 [00:14<47:18, 14.41s/it]  1% 2/198 [00:24<38:23, 11.75s/it]  2% 3/198 [00:25<22:11,  6.83s/it]  2% 4/198 [00:45<39:31, 12.23s/it]  3% 5/198 [00:48<28:18,  8.80s/it]  3% 6/198 [01:05<36:40, 11.46s/it]Retry attempt 1/5 due to: TimeoutError: 
+  4% 7/198 [02:13<1:35:51, 30.11s/it]  4% 8/198 [02:28<1:20:18, 25.36s/it]Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+  5% 9/198 [04:01<2:26:16, 46.44s/it]  5% 10/198 [04:15<1:53:47, 36.31s/it]  6% 11/198 [04:22<1:25:54, 27.56s/it]Retry attempt 1/5 due to: TimeoutError: 
+  6% 12/198 [04:42<1:18:02, 25.18s/it]  7% 13/198 [04:56<1:06:37, 21.61s/it]Retry attempt 2/5 due to: TimeoutError: 
+  7% 14/198 [05:16<1:05:33, 21.38s/it]  8% 15/198 [05:31<58:53, 19.31s/it]    8% 16/198 [05:35<44:24, 14.64s/it]  9% 17/198 [05:45<39:50, 13.21s/it]  9% 18/198 [05:50<32:09, 10.72s/it] 10% 19/198 [05:58<29:58, 10.05s/it] 10% 20/198 [06:13<34:25, 11.60s/it]Retry attempt 1/5 due to: TimeoutError: 
+ 11% 21/198 [06:25<34:36, 11.73s/it] 11% 22/198 [06:39<36:12, 12.35s/it] 12% 23/198 [06:53<37:08, 12.74s/it] 12% 24/198 [07:11<41:48, 14.42s/it] 13% 25/198 [07:20<36:55, 12.81s/it] 13% 26/198 [07:34<37:16, 13.00s/it] 14% 27/198 [07:34<26:31,  9.31s/it] 14% 28/198 [07:50<31:41, 11.18s/it]Retry attempt 1/5 due to: TimeoutError: 
+ 15% 29/198 [07:53<24:38,  8.75s/it] 15% 30/198 [08:09<30:19, 10.83s/it] 16% 31/198 [08:17<27:58, 10.05s/it] 16% 32/198 [08:21<22:32,  8.15s/it] 17% 33/198 [08:28<21:55,  7.97s/it] 17% 34/198 [08:42<26:29,  9.69s/it] 18% 35/198 [09:20<49:32, 18.24s/it] 18% 36/198 [09:36<47:05, 17.44s/it]Retry attempt 2/5 due to: TimeoutError: 
+ 19% 37/198 [10:04<55:47, 20.79s/it] 19% 38/198 [10:18<50:13, 18.84s/it]Retry attempt 1/5 due to: TimeoutError: 
+ 20% 39/198 [10:35<48:22, 18.25s/it] 20% 40/198 [10:41<38:09, 14.49s/it] 21% 41/198 [10:48<32:00, 12.23s/it] 21% 42/198 [10:59<31:04, 11.95s/it] 22% 43/198 [11:13<31:52, 12.34s/it] 22% 44/198 [11:39<42:15, 16.47s/it]Retry attempt 3/5 due to: TimeoutError: 
+ 23% 45/198 [12:16<57:46, 22.66s/it]Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 4/5 due to: TimeoutError: 
+Retry attempt 1/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 2/5 due to: TimeoutError: 
+Retry attempt 5/5 due to: TimeoutError: 
+ 23% 45/198 [16:24<55:47, 21.88s/it]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 539, in start
+    message, payload = await protocol.read()  # type: ignore[union-attr]
+                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/streams.py", line 680, in read
+    await self._waiter
+asyncio.exceptions.CancelledError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 757, in _connect_and_send_request
+    await resp.start(conn)
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client_reqrep.py", line 534, in start
+    with self._timer:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/helpers.py", line 713, in __exit__
+    raise asyncio.TimeoutError from exc_val
+TimeoutError
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x1454fae1e1b0 state=finished raised TimeoutError>]
+
+The evaluation container failed with exit code 1

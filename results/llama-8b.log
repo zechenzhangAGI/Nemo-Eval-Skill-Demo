@@ -1,0 +1,28 @@
+[I 2026-01-15T23:57:33.409] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-15T23:57:35.999] Loaded external task IRs from package resources num_tasks=318
+[I 2026-01-15T23:57:36.014] External mapping.toml checksum matches all_tasks_irs.yaml checksum=sha256:881e6d1de31824c9e77a3e13c0a9ab988d6bab7cc9fab5b298ef1e5b1bdf1af9
+[I 2026-01-15T23:57:36.014] Loaded external tasks from IRs total_tasks=318
+[I 2026-01-15T23:57:36.017] Using merged IRs total_tasks=318 internal_tasks=0 external_tasks=318 mapping_verified=True
+[I 2026-01-15T23:57:36.019] Loaded tasks from packaged IRs num_tasks=318 mapping_verified=True
+[I 2026-01-15T23:57:36.111] Job written to execution database invocation_id=d4c6cc67be59af99 job_id=d4c6cc67be59af99.0 executor=local
+[I 2026-01-15T23:57:36.490] Saved complete config path=/n/home04/zechenzhang/.nemo-evaluator/run_configs/d4c6cc67be59af99_config.yml
+
+Commands for real-time monitoring:
+
+  Job d4c6cc67be59af99.0 (gpqa_diamond):
+    nemo-evaluator-launcher logs d4c6cc67be59af99.0
+
+Follow all logs for this invocation:
+  nemo-evaluator-launcher logs d4c6cc67be59af99
+Complete run config saved to: 
+  /n/home04/zechenzhang/.nemo-evaluator/run_configs/d4c6cc67be59af99_config.yml
+
+To check status: nemo-evaluator-launcher status d4c6cc67be59af99
+To view job info: nemo-evaluator-launcher info d4c6cc67be59af99
+To kill all jobs: nemo-evaluator-launcher kill d4c6cc67be59af99
+To kill individual jobs:
+  nemo-evaluator-launcher kill d4c6cc67be59af99.0  # gpqa_diamond
+(all commands accept shortened IDs as long as there are no conflicts)
+To print all jobs: nemo-evaluator-launcher ls runs
+  (--since 1d or --since 6h for time span, see --help)
+✓ Job submission successful | Invocation ID: d4c6cc67be59af99
