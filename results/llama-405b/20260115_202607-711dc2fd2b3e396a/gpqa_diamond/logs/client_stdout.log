@@ -1,0 +1,736 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T01:26:09.399] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:26:09.711] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: 5
+    parallelism: 3
+    request_timeout: 60
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-405b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T01:26:09.733] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T01:26:10.258] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:26:10.328] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:26:10.328] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:26:10.330] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T01:26:10.331] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T01:26:10.331] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:26:10.331] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:16.918] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T01:27:16.918] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T01:27:25.415] Adapter server started on localhost:3825 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:25.427] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-405b-instruct --eval_name gpqa_diamond --url http://localhost:3825 --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 3 --max_retries 5 --timeout 60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.428] Temporary directory created at: /tmp/tmpt_ighape logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.428] Script file created: /tmp/tmpt_ighape/3f992406f4a239d670e9fef4a5bb8e7b523bcf43.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.428] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.429] Subprocess started. logger=nemo_evaluator.core.utils
+Using model: meta/llama-3.1-405b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 28.1MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 23.5MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7804.31 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+[I 2026-01-16T01:27:39.911] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T01:27:40.630] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T01:27:40.630] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:40.635] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:40.635] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+Address already in use
+Port 3825 is in use by another program. Either identify and stop that program, or start the server with a different port.
+  0% 0/198 [00:00<?, ?it/s]  1% 1/198 [00:27<1:30:12, 27.48s/it]  1% 2/198 [00:29<40:29, 12.39s/it]    2% 3/198 [00:42<41:26, 12.75s/it]  2% 4/198 [00:45<28:51,  8.93s/it]  3% 5/198 [00:48<22:07,  6.88s/it]  3% 6/198 [01:06<34:09, 10.67s/it]  4% 7/198 [01:12<28:20,  8.91s/it]Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+  4% 7/198 [01:50<50:11, 15.77s/it]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x1470114b2d80 state=finished raised ClientConnectorError>]
+Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x146fcf06ac00 state=finished raised ClientConnectorError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x146fcf06ac00 state=finished raised ClientConnectorError>]
+Task exception was never retrieved
+future: <Task finished name='Task-8' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x146fcfdcf2c0 state=finished raised ClientConnectorError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x146fcfdcf2c0 state=finished raised ClientConnectorError>]
+[I 2026-01-16T01:29:45.347] Output reading completed. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:29:45.348] Subprocess finished with return code: 1 logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:29:45.349] Server not responding, post-eval hooks already run by signal handler logger=nemo_evaluator.adapters.server
+Traceback (most recent call last):
+  File "/opt/venv/bin/nemo-evaluator", line 7, in <module>
+    sys.exit(run_eval())
+             ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 208, in run_eval
+    run(args)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/entrypoint.py", line 170, in run
+    evaluate(eval_cfg=eval_cfg, target_cfg=target_cfg, metadata=metadata_cfg)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 137, in evaluate
+    evaluation_result, metrics = monitor_memory_usage(
+                                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/resources.py", line 279, in monitor_memory_usage
+    ret = func(*args, **func_kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/evaluate.py", line 112, in run_evaluation_core
+    run_command(cmd, verbose=True, propagate_errors=True)
+  File "/opt/venv/lib/python3.12/site-packages/nemo_evaluator/core/utils.py", line 171, in run_command
+    raise RuntimeError(
+RuntimeError: Evaluation failed! Please consult the logs below:
+Using model: meta/llama-3.1-405b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 28.1MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 23.5MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7804.31 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s]  1% 1/198 [00:27<1:30:12, 27.48s/it]  1% 2/198 [00:29<40:29, 12.39s/it]    2% 3/198 [00:42<41:26, 12.75s/it]  2% 4/198 [00:45<28:51,  8.93s/it]  3% 5/198 [00:48<22:07,  6.88s/it]  3% 6/198 [01:06<34:09, 10.67s/it]  4% 7/198 [01:12<28:20,  8.91s/it]Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 1/5 due to: ServerDisconnectedError: Server disconnected
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 2/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 3/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 4/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+Retry attempt 5/5 due to: ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+  4% 7/198 [01:50<50:11, 15.77s/it]
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/bin/simple_evals", line 7, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 417, in main
+    asyncio.run(run())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 194, in run
+    return runner.run(main)
+           ^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 687, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/__main__.py", line 388, in run
+    result = await eval_obj(sampler)
+             ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 128, in __call__
+    results = await common.map_with_progress(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 413, in map_with_progress
+    results = [await result for result in tqdm(asyncio.as_completed(tasks), total=len(items))]
+               ^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/tasks.py", line 631, in _wait_for_one
+    return f.result()  # May raise f.exception().
+           ^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x1470114b2d80 state=finished raised ClientConnectorError>]
+Task exception was never retrieved
+future: <Task finished name='Task-11' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x146fcf06ac00 state=finished raised ClientConnectorError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x146fcf06ac00 state=finished raised ClientConnectorError>]
+Task exception was never retrieved
+future: <Task finished name='Task-8' coro=<map_with_progress.<locals>.worker() done, defined at /opt/venv/lib/python3.12/site-packages/simple_evals/common.py:400> exception=RetryError(<Future at 0x146fcfdcf2c0 state=finished raised ClientConnectorError>)>
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1268, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 122, in start_connection
+    raise first_exception
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 73, in start_connection
+    sock = await _connect_sock(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohappyeyeballs/impl.py", line 208, in _connect_sock
+    await loop.sock_connect(sock, address)
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 651, in sock_connect
+    return await fut
+           ^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/selector_events.py", line 691, in _sock_connect_cb
+    raise OSError(err, f'Connect call failed {address}')
+ConnectionRefusedError: [Errno 111] Connect call failed ('127.0.0.1', 3825)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 114, in __call__
+    result = await fn(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 63, in _make_request
+    async with session.post(self.url, json=payload, headers=headers, timeout=self.timeout) as response:
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 1510, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 779, in _request
+    resp = await handler(req)
+           ^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/client.py", line 734, in _connect_and_send_request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 642, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1209, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1581, in _create_direct_connection
+    raise last_exc
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1550, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/aiohttp/connector.py", line 1291, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:3825 ssl:default [Connect call failed ('127.0.0.1', 3825)]
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/common.py", line 407, in worker
+    result = await func(item, idx)
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/evals/gpqa_eval.py", line 92, in fn
+    response_text = await sampler(prompt_messages, seed=completion_seed)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 104, in __call__
+    response_data = await self._send_request(payload)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/simple_evals/sampler/chat_completion_sampler.py", line 89, in _send_request
+    return await retrying_logic(self._make_request)(session, payload)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 189, in async_wrapped
+    return await copy(fn, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 111, in __call__
+    do = await self.iter(retry_state=retry_state)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/asyncio/__init__.py", line 153, in iter
+    result = await action(retry_state)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/_utils.py", line 99, in inner
+    return call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/venv/lib/python3.12/site-packages/tenacity/__init__.py", line 419, in exc_check
+    raise retry_exc from fut.exception()
+tenacity.RetryError: RetryError[<Future at 0x146fcfdcf2c0 state=finished raised ClientConnectorError>]
+
+The evaluation container failed with exit code 1

@@ -1,0 +1,136 @@
+Emulate Docker CLI using podman. Create /etc/containers/nodocker to quiet msg.
+[I 2026-01-16T01:25:58.314] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:25:58.814] User-invoked config: 
+command: '{% if target.api_endpoint.api_key is not none %}export API_KEY=${{target.api_endpoint.api_key}}
+  && {% endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} python3 -c ''import yaml, json, sys; config_data = {{config.params.extra.custom_config
+  | tojson}}; json.dump(config_data, open("{{config.output_dir}}/temp_config.json",
+  "w")); yaml.dump(config_data, open("{{config.output_dir}}/custom_config.yml", "w"),
+  default_flow_style=False)'' && {% endif %} simple_evals --model {{target.api_endpoint.model_id}}
+  --eval_name {{config.params.task}} --url {{target.api_endpoint.url}} --temperature
+  {{config.params.temperature}} --top_p {{config.params.top_p}} --max_tokens {{config.params.max_new_tokens}}
+  --out_dir {{config.output_dir}}/{{config.type}} --cache_dir {{config.output_dir}}/{{config.type}}/cache
+  --num_threads {{config.params.parallelism}} --max_retries {{config.params.max_retries}}
+  --timeout {{config.params.request_timeout}} {% if config.params.extra.n_samples
+  is defined %} --num_repeats {{config.params.extra.n_samples}}{% endif %} {% if config.params.limit_samples
+  is not none %} --first_n {{config.params.limit_samples}}{% endif %} {% if config.params.extra.add_system_prompt  %}
+  --add_system_prompt {% endif %} {% if config.params.extra.downsampling_ratio is
+  not none %} --downsampling_ratio {{config.params.extra.downsampling_ratio}}{% endif
+  %} {% if config.params.extra.args is defined %} {{ config.params.extra.args }} {%
+  endif %} {% if config.params.extra.judge.url is not none %} --judge_url {{config.params.extra.judge.url}}{%
+  endif %} {% if config.params.extra.judge.model_id is not none %} --judge_model_id
+  {{config.params.extra.judge.model_id}}{% endif %} {% if config.params.extra.judge.api_key
+  is not none %} --judge_api_key_name {{config.params.extra.judge.api_key}}{% endif
+  %} {% if config.params.extra.judge.backend is not none %} --judge_backend {{config.params.extra.judge.backend}}{%
+  endif %} {% if config.params.extra.judge.request_timeout is not none %} --judge_request_timeout
+  {{config.params.extra.judge.request_timeout}}{% endif %} {% if config.params.extra.judge.max_retries
+  is not none %} --judge_max_retries {{config.params.extra.judge.max_retries}}{% endif
+  %} {% if config.params.extra.judge.temperature is not none %} --judge_temperature
+  {{config.params.extra.judge.temperature}}{% endif %} {% if config.params.extra.judge.top_p
+  is not none %} --judge_top_p {{config.params.extra.judge.top_p}}{% endif %} {% if
+  config.params.extra.judge.max_tokens is not none %} --judge_max_tokens {{config.params.extra.judge.max_tokens}}{%
+  endif %} {% if config.params.extra.judge.max_concurrent_requests is not none %}
+  --judge_max_concurrent_requests {{config.params.extra.judge.max_concurrent_requests}}{%
+  endif %} {% if config.params.extra.custom_config is defined and config.params.extra.custom_config
+  is not none %} --custom_eval_cfg_file {{config.output_dir}}/custom_config.yml{%
+  endif %}'
+config:
+  output_dir: /results
+  params:
+    extra:
+      add_system_prompt: false
+      custom_config: null
+      downsampling_ratio: null
+      judge:
+        api_key: null
+        backend: openai
+        max_concurrent_requests: null
+        max_retries: 16
+        max_tokens: 1024
+        model_id: null
+        request_timeout: 600
+        temperature: 0.0
+        top_p: 0.0001
+        url: null
+    limit_samples: null
+    max_new_tokens: 2048
+    max_retries: 5
+    parallelism: 3
+    request_timeout: 60
+    task: gpqa_diamond
+    temperature: 0.6
+    top_p: 1.0e-05
+  supported_endpoint_types:
+  - chat
+  type: gpqa_diamond
+framework_name: simple_evals
+pkg_name: simple_evals
+target:
+  api_endpoint:
+    adapter_config:
+      discovery:
+        dirs: []
+        modules: []
+      endpoint_type: chat
+      interceptors:
+      - config:
+          cache_dir: /results/cache
+          max_saved_requests: 5
+          max_saved_responses: 5
+          reuse_cached_responses: true
+          save_requests: true
+          save_responses: true
+        enabled: true
+        name: caching
+      - config: {}
+        enabled: true
+        name: endpoint
+      - config:
+          cache_dir: /results/response_stats_cache
+          logging_aggregated_stats_interval: 100
+        enabled: true
+        name: response_stats
+      log_failed_requests: false
+      post_eval_hooks:
+      - config:
+          html_report_size: 5
+          report_types:
+          - html
+          - json
+        enabled: true
+        name: post_eval_report
+    api_key: API_KEY
+    model_id: meta/llama-3.1-405b-instruct
+    stream: null
+    type: chat
+    url: https://integrate.api.nvidia.com/v1/chat/completions
+ logger=nemo_evaluator.core.input
+[I 2026-01-16T01:25:58.899] Using caching interceptor cache_dir: /results/cache logger=nemo_evaluator.core.evaluate
+[I 2026-01-16T01:25:59.722] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:25:59.903] Centralized logging configured (console only) console_level=INFO log_dir=none (NEMO_EVALUATOR_LOG_DIR not set) logger=nemo_evaluator.logging.utils
+[I 2026-01-16T01:25:59.903] File logging setup completed (uses NEMO_EVALUATOR_LOG_DIR environment variable if set) logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:25:59.905] Successfully imported module: nemo_evaluator.adapters.interceptors logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T01:25:59.907] Successfully imported module: nemo_evaluator.adapters.reports logger=nemo_evaluator.adapters.registry
+[I 2026-01-16T01:25:59.907] Using interceptors interceptors=['caching', 'endpoint', 'response_stats'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:25:59.907] Using post-eval hooks hooks=['post_eval_report'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:07.099] Caching interceptor initialized cache_dir=/results/cache reuse_cached_responses=True save_requests=True save_responses=True max_saved_requests=5 max_saved_responses=None logger=CachingInterceptor
+[I 2026-01-16T01:27:07.099] Endpoint interceptor initialized logger=EndpointInterceptor
+[I 2026-01-16T01:27:24.867] No cached interceptor state found logger=ResponseStatsInterceptor
+[I 2026-01-16T01:27:25.349] Adapter server started on localhost:3825 logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:25.361] Running command: export API_KEY=$API_KEY &&   simple_evals --model meta/llama-3.1-405b-instruct --eval_name gpqa_diamond --url http://localhost:3825 --temperature 0.6 --top_p 1e-05 --max_tokens 2048 --out_dir /results/gpqa_diamond --cache_dir /results/gpqa_diamond/cache --num_threads 3 --max_retries 5 --timeout 60          --judge_backend openai  --judge_request_timeout 600  --judge_max_retries 16  --judge_temperature 0.0  --judge_top_p 0.0001  --judge_max_tokens 1024   logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.362] Temporary directory created at: /tmp/tmpf1ovwdo9 logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.362] Script file created: /tmp/tmpf1ovwdo9/3f992406f4a239d670e9fef4a5bb8e7b523bcf43.sh logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.362] Command written to script file. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:25.363] Subprocess started. logger=nemo_evaluator.core.utils
+[I 2026-01-16T01:27:26.299] Response stats interceptor initialized collect_token_stats=True collect_finish_reasons=True collect_tool_calls=True stats_file_saving_interval=None save_individuals=True cache_dir=/results/response_stats_cache logging_aggregated_stats_interval=100 logger=ResponseStatsInterceptor
+[I 2026-01-16T01:27:26.299] Built interceptor chain interceptors=['CachingInterceptor', 'EndpointInterceptor', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:26.501] Built post-eval hooks hooks=['PostEvalReportHook', 'ResponseStatsInterceptor'] logger=nemo_evaluator.adapters.server
+[I 2026-01-16T01:27:26.501] Starting adapter server with default logging logger=nemo_evaluator.adapters.server
+Address already in use
+Port 3825 is in use by another program. Either identify and stop that program, or start the server with a different port.
+Using model: meta/llama-3.1-405b-instruct, with url: http://localhost:3825, and api_key from environment variable: API_KEY
+README.md:   0% 0.00/3.30k [00:00<?, ?B/s]README.md: 100% 3.30k/3.30k [00:00<00:00, 26.2MB/s]
+gpqa_diamond.csv:   0% 0.00/1.37M [00:00<?, ?B/s]gpqa_diamond.csv: 100% 1.37M/1.37M [00:00<00:00, 17.9MB/s]
+Generating train split:   0% 0/198 [00:00<?, ? examples/s]Generating train split: 100% 198/198 [00:00<00:00, 7991.84 examples/s]
+Creating new cache at /results/gpqa_diamond/cache/cache.sqlite
+  0% 0/198 [00:00<?, ?it/s]  1% 1/198 [00:31<1:44:13, 31.75s/it]  1% 2/198 [00:32<45:04, 13.80s/it]    2% 3/198 [00:40<35:43, 10.99s/it]  2% 4/198 [00:49<32:53, 10.17s/it]  3% 5/198 [00:51<23:10,  7.21s/it]  3% 6/198 [01:01<25:39,  8.02s/it]
