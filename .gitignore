@@ -10,3 +10,6 @@ __pycache__/
 
 # Claude cache
 .claude/
+
+# NFS lock files
+.nfs*
