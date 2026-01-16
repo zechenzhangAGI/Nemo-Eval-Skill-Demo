@@ -1,0 +1,15 @@
+# Virtual environment
+venv/
+
+# Environment variables (secrets)
+.env
+
+# Results (large files)
+results/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Claude cache
+.claude/
